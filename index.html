@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Laundry Admin</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="modal-styles.css">
+    <link rel="stylesheet" href="insights-styles.css">
+    <link rel="stylesheet" href="customer-dashboard.css">
+</head>
+
+<body>
+    <div id="auth-section">
+        <div class="auth-container">
+            <h1>Laundry Management System</h1>
+
+            <!-- Toggle Tabs -->
+            <div class="tab-toggle">
+                <button onclick="showTab('admin')" id="tab-admin" class="active-tab">Admin</button>
+                <button onclick="showTab('customer')" id="tab-customer">Customer</button>
+            </div>
+
+            <!-- Admin Login Form -->
+            <div id="admin-form" class="auth-form">
+                <h2>Admin Login</h2>
+                <div class="form-group">
+                    <input type="text" id="username" placeholder="Username">
+                </div>
+                <div class="form-group">
+                    <input type="password" id="password" placeholder="Password">
+                </div>
+                <button onclick="login()">Login</button>
+                <p id="login-message"></p>
+            </div>
+
+            <!-- Customer registration and login form -->
+            <div id="customer-form" class="auth-form hidden">
+                <div id="customer-login-section">
+                    <h2>Customer Login</h2>
+                    <div class="form-group">
+                        <input type="text" id="customer-phone-login" placeholder="Phone Number">
+                    </div>
+                    <div class="form-group">
+                        <input type="password" id="customer-password-login" placeholder="Password">
+                    </div>
+                    <button onclick="loginCustomer()">Login</button>
+                    <p class="switch-auth">
+                        New Customer? <button onclick="toggleAuthMode('register')" class="text-btn">Register
+                            here</button>
+                    </p>
+                </div>
+
+                <div id="customer-register-section" class="hidden">
+                    <h2>Register New Account</h2>
+                    <div class="form-group">
+                        <input type="text" id="customer-phone-register" placeholder="Phone Number">
+                    </div>
+                    <div class="form-group">
+                        <input type="password" id="customer-password-register" placeholder="Password">
+                    </div>
+                    <button onclick="registerCustomer()">Register</button>
+                    <p class="switch-auth">
+                        Already have an account? <button onclick="toggleAuthMode('login')" class="text-btn">Login
+                            here</button>
+                    </p>
+                </div>
+                <p id="customer-auth-message"></p>
+            </div>
+        </div>
+    </div>
+
+    <div id="customer-dashboard" class="hidden">
+        <!-- Sidebar Overlay -->
+        <div id="sidebar-overlay" class="sidebar-overlay hidden" onclick="closeCustomerProfileSidebar()"></div>
+        
+        <!-- Customer Profile Sidebar -->
+        <div id="customer-profile-sidebar" class="profile-sidebar hidden">
+            <div class="sidebar-header">
+                <h3>My Profile</h3>
+                <button onclick="closeCustomerProfileSidebar()" class="close-sidebar-btn">
+                    <span class="icon">✕</span>
+                </button>
+            </div>
+            
+            <div class="sidebar-content">
+                <!-- Customer Information Section -->
+                <div class="profile-info-section">
+                    <h4><span class="icon">👤</span> Personal Information</h4>
+                    <div class="info-item">
+                        <label>Full Name</label>
+                        <div class="info-value">
+                            <span class="info-icon">👤</span>
+                            <span id="profile-customer-name">Loading...</span>
+                        </div>
+                    </div>
+                    <div class="info-item">
+                        <label>Phone Number</label>
+                        <div class="info-value">
+                            <span class="info-icon">📱</span>
+                            <span id="profile-customer-phone">Loading...</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Password Change Section -->
+                <div class="password-section">
+                    <h4><span class="icon">🔐</span> Security</h4>
+                    <button onclick="showPasswordChangeForm()" id="change-password-btn" class="change-password-btn">
+                        <span class="icon">🔑</span> Change Password
+                    </button>
+                    
+                    <div id="password-change-form" class="password-form hidden">
+                        <div id="customer-profile-message" class="message"></div>
+                        <div class="form-group">
+                            <label for="old_password">Current Password</label>
+                            <div class="input-wrapper">
+                                <span class="input-icon">🔒</span>
+                                <input type="password" id="old_password" placeholder="Enter current password">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="new_password">New Password</label>
+                            <div class="input-wrapper">
+                                <span class="input-icon">🔑</span>
+                                <input type="password" id="new_password" placeholder="Enter new password">
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                            <button onclick="submitPasswordChange()" class="primary-btn">Update Password</button>
+                            <button onclick="cancelPasswordChange()" class="secondary-btn">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="dashboard-header">
+            <div>
+                <h2>👋 Welcome <span id="customer-name-display"></span>!</h2>
+            </div>
+            <div class="header-actions">
+                <button onclick="showCustomerProfile()">
+                    <span class="icon">👤</span> My Profile
+                </button>
+                <button onclick="logoutCustomer()" class="logout-btn">
+                    <span class="icon">🚪</span> Logout
+                </button>
+            </div>
+        </div>
+
+        <div class="balance-box">
+            <h2>
+                <span class="icon">💰</span>
+                Balance Due: ₹<span id="customer-balance">0</span>
+            </h2>
+            <button onclick="showCustomerPaymentModal()" id="pay-now-btn">
+                <span class="icon">💳</span> Pay Now
+            </button>
+        </div>
+
+        <div class="table-container">
+            <h3>
+                <span class="icon">📦</span>
+                Your Orders
+            </h3>
+            <table class="order-table">
+                <thead>
+                    <tr>
+                        <th>Order Date</th>
+                        <th>Service</th>
+                        <th>Total Clothes</th>
+                        <th>Amount</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="customer-order-body">
+                </tbody>
+            </table>
+        </div>
+
+        <div id="customer-orders-container"></div>
+        
+        <div class="table-container">
+            <h3>
+                <span class="icon">💵</span>
+                Your Payments
+            </h3>
+            <table class="payment-table">
+                <thead>
+                    <tr>
+                        <th>Transaction ID</th>
+                        <th>Amount</th>
+                        <th>Timestamp</th>
+                        <th>Receipts</th>
+                    </tr>
+                </thead>
+                <tbody id="customer-payment-body">
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+
+    <!-- Admin Dashboard -->
+    <div id="admin-dashboard" class="hidden">
+        <!-- Admin Header -->
+        <header class="admin-header">
+            <div class="header-content">
+                <button id="sidebar-toggle" class="sidebar-toggle" onclick="toggleSidebar()">
+                    <span class="toggle-icon"></span>
+                </button>
+                <h2>Admin Panel</h2>
+            </div>
+        </header>
+
+        <!-- Sidebar Navigation -->
+        <div id="admin-sidebar" class="admin-sidebar">
+            <nav class="sidebar-nav">
+                <div class="nav-items">
+                    <button onclick="showDashboard()" class="nav-item">
+                        <span class="nav-icon">📊</span>
+                        Dashboard
+                    </button>
+                    <button onclick="showAddCustomer()" class="nav-item">
+                        <span class="nav-icon">👤</span>
+                        Add Customer
+                    </button>
+                    <button onclick="showTakeOrder()" class="nav-item">
+                        <span class="nav-icon">📝</span>
+                        Take Order
+                    </button>
+                    <button onclick="showManageCustomers()" class="nav-item">
+                        <span class="nav-icon">👥</span>
+                        Manage Customers
+                    </button>
+                    <button onclick="showManageOrders()" class="nav-item">
+                        <span class="nav-icon">📋</span>
+                        Show Orders
+                    </button>
+                    <button onclick="showPayments()" class="nav-item">
+                        <span class="nav-icon">💰</span>
+                        Payments
+                    </button>
+                    <button onclick="showInsights()" class="nav-item">
+                        <span class="nav-icon">📊</span>
+                        Insights
+                    </button>
+                    <button onclick="showCustomerPayments()" class="nav-item">
+                        <span class="nav-icon">💳</span>
+                        Customer Payments
+                    </button>
+                </div>
+                <button onclick="logoutAdmin()" class="sidebar-logout">
+                    <span class="nav-icon">⬅️</span>
+                    Logout
+                </button>
+            </nav>
+        </div>
+
+        <!-- Main Content Area -->
+        <main id="main-content" class="main-content">
+            <!-- Dashboard Stats -->
+            <div id="stats-cards" class="dashboard-cards">
+                <div class="card pending-card">
+                    <div class="card-icon">⏳</div>
+                    <div class="card-content">
+                        <h3>Pending Orders</h3>
+                        <p id="pending-count">0</p>
+                    </div>
+                </div>
+                <div class="card revenue-card">
+                    <div class="card-icon">💵</div>
+                    <div class="card-content">
+                        <h3>Today's Revenue</h3>
+                        <p id="daily-revenue">0</p>
+                    </div>
+                </div>
+                <div class="card business-revenue-card">
+                    <div class="card-icon">📈</div>
+                    <div class="card-content">
+                        <h3>Business Revenue</h3>
+                        <p id="business-revenue">0</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Manage Orders Section -->
+            <div id="manage-order-section" class="hidden">
+                <div class="form-container">
+                    <div class="form-card">
+                        <div class="form-header">
+                            <h2>Orders</h2>
+                        </div>
+                        <div class="form-body">
+                            <!-- Filters -->
+                            <div class="filter-row">
+                                <div class="filter-item">
+                                    <label for="filter-status">Status</label>
+                                    <select id="filter-status">
+                                        <option value="">All Statuses</option>
+                                        <option value="PENDING">Pending</option>
+                                        <option value="IN_PROGRESS">In Progress</option>
+                                        <option value="COMPLETED">Completed</option>
+                                    </select>
+                                </div>
+
+                                <div class="filter-item">
+                                    <label for="filter-customer">Customer</label>
+                                    <select id="filter-customer">
+                                        <option value="">All Customers</option>
+                                    </select>
+                                </div>
+
+                                <div class="filter-item date-range">
+                                    <label>Date Range</label>
+                                    <div class="date-inputs">
+                                        <input type="date" id="filter-start-date">
+                                        <input type="date" id="filter-end-date">
+                                    </div>
+                                </div>
+
+                                <div class="filter-actions">
+                                    <button onclick="applyFilters()" class="apply-btn">
+                                        <span class="button-icon">🔍</span> Apply
+                                    </button>
+                                    <button onclick="clearFilters()" class="clear-btn">
+                                        <span class="button-icon">↺</span> Clear
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Orders Table -->
+                            <div class="table-container">
+                                <table id="orders-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Order ID</th>
+                                            <th>Customer</th>
+                                            <th>Details</th>
+                                            <th>Date</th>
+                                            <th>Status</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Add Customer Section -->
+            <div id="add-customer-section" class="hidden">
+                <div class="form-container">
+                    <div class="form-card">
+                        <div class="form-header">
+                            <h2>Add New Customer</h2>
+                        </div>
+                        <div class="form-body">
+                            <div class="input-group">
+                                <label for="customer-name">Full Name</label>
+                                <div class="input-wrapper">
+                                    <span class="input-icon">👤</span>
+                                    <input type="text" id="customer-name" placeholder="Enter customer's full name" pattern=".*[A-Za-z]+.*" autocomplete="name" required>
+                                </div>
+                               
+                            </div>
+                            <div class="input-group">
+                                <label for="customer-phone">Phone Number</label>
+                                <div class="input-wrapper">
+                                    <span class="input-icon">📱</span>
+                                    <input type="tel" id="customer-phone" placeholder="Enter 10-digit phone number"
+                                        pattern="[0-9]{10}" maxlength="10" autocomplete="tel" required>
+                                </div>
+                                
+                            </div>
+                            <div class="form-actions">
+                                <button id="add-btn" class="primary-button" onclick="addCustomer()">
+                                    Add Customer
+                                </button>
+                                <button class="secondary-button" onclick="resetForm()">
+                                    Clear Form
+                                </button>
+                            </div>
+                            <div id="action-message" role="status" aria-live="polite"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Take Order Section -->
+            <div id="take-order-section" class="hidden">
+                <div class="form-container">
+                    <div class="form-card">
+                        <div class="form-header">
+                            <h2>Take New Order</h2>
+                        </div>
+                        <div class="form-body">
+                            <div class="input-group">
+                                <label for="customer-select">Customer</label>
+                                <div class="input-wrapper">
+                                    <span class="input-icon">👤</span>
+                                    <select id="customer-select" required>
+                                        <option value="">Select Customer</option>
+                                    </select>
+                                </div>
+                                
+                            </div>
+
+                            <div class="input-group">
+                                <label>Service Type</label>
+                                <div class="service-options">
+                                    <label class="service-option">
+                                        <input type="radio" name="serviceType" value="REGULAR" checked>
+                                        <span class="service-icon">👕</span>
+                                        <span class="service-label">Regular</span>
+                                    </label>
+                                    <label class="service-option">
+                                        <input type="radio" name="serviceType" value="LAUNDRY">
+                                        <span class="service-icon">🧥</span>
+                                        <span class="service-label">Dry Cleaning</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="input-group">
+                                <label for="cloth-count">Number of Clothes</label>
+                                <div class="input-wrapper">
+                                    <span class="input-icon">🔢</span>
+                                    <input type="number" id="cloth-count" placeholder="Enter number of clothes" min="1"
+                                        required>
+                                </div>
+                                
+                            </div>
+
+                            <div class="form-actions">
+                                <button class="primary-button" onclick="submitOrder()">
+                                    Create Order
+                                </button>
+                                <button class="secondary-button" onclick="resetOrderForm()">
+                                    Clear Form
+                                </button>
+                            </div>
+                            <div id="order-message" role="status" aria-live="polite"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Manage Customers Section -->
+            <div id="manage-customers-section" class="hidden">
+                <div class="form-container">
+                    <div class="form-card">
+                        <div class="form-header">
+                            <h2>Manage Customers</h2>
+                        </div>
+                        <div class="form-body">
+                            <!-- Customer List Table -->
+                            <div class="table-container">
+                                <table id="customers-table">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Name</th>
+                                            <th>Phone</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="customers-table-body">
+                                        <!-- Rows will be dynamically inserted here by js -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Payments Section -->
+            <div id="payments-section" class="hidden">
+                <div class="form-container">
+                    <div class="form-card">
+                        <div class="form-header">
+                            <h2>Payments</h2>
+                        </div>
+                        <div class="form-body">
+                            <div class="table-container">
+                                <table id="payments-table">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Customer</th>
+                                            <th>Amount</th>
+                                            <th>Details</th>
+                                            <th>Pay</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Customer Payments Section -->
+            <div id="customer-payment-section" class="hidden">
+                <div class="form-container">
+                    <div class="form-card">
+                        <div class="form-header">
+                            <h2>Customer Payments</h2>
+                        </div>
+                        <div class="form-body">
+                            <div class="table-container">
+                                <table id="customer-payments-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Transaction ID</th>
+                                            <th>Customer Name</th>
+                                            <th>Amount</th>
+                                            <th>Date</th>
+                                            <th>Status</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- show insights section -->
+            <div id="insights-section" class="hidden">
+                <h2>Business Insights</h2>
+                <div class="dashboard-cards">
+                    <div class=" card total-customer-card">
+                        <h3>Total Customers</h3>
+                        <p id="total-customers">0</p>
+                    </div>
+
+
+                    <div class=" card total-revenue-card">
+                        <h3>Revenue</h3>
+                        <p id="total-revenue">₹0.00</p>
+                    </div>
+                </div>
+
+                <h3>Top Paying Customers</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Total Paid</th>
+                        </tr>
+                    </thead>
+                    <tbody id="top-customers-body"></tbody>
+                </table>
+
+                <h3>Customers with Due</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Balance</th>
+                        </tr>
+                    </thead>
+                    <tbody id="due-customers-body"></tbody>
+                </table>
+            </div>
+
+
+            <!-- Edit Customer Modal -->
+            <div id="edit-customer-modal" class="modal hidden">
+                <div class="modal-content">
+                    <span class="close" onclick="closeEditCustomerModal()">&times;</span>
+                    <h3>Edit Customer Details</h3>
+                    <div id="edit-customer-form">
+                        <div class="input-group">
+                            <label for="edit-customer-name">Full Name</label>
+                            <div class="input-wrapper">
+                                <span class="input-icon">👤</span>
+                                <input type="text" id="edit-customer-name" placeholder="Full Name" required>
+                            </div>
+                        </div>
+                        <div class="input-group">
+                            <label for="edit-customer-phone">Phone Number</label>
+                            <div class="input-wrapper">
+                                <span class="input-icon">📱</span>
+                                <input type="text" id="edit-customer-phone" placeholder="Phone Number" required>
+                            </div>
+                        </div>
+                        <div class="modal-actions">
+                            <div class="main-actions">
+                                <button onclick="updateCustomer()" class="primary-button">Save Changes</button>
+                                <button onclick="closeEditCustomerModal()" class="secondary-button">Cancel</button>
+                            </div>
+                            <div class="danger-zone">
+                                <hr class="divider">
+                                <p class="danger-text">Danger Zone</p>
+                                <button onclick="deleteCustomer(currentCustomerId)" class="danger-button">
+                                    🗑️ Delete Customer
+                                </button>
+                            </div>
+                        </div>
+                        <div id="edit-customer-message" class="message"></div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Order Confirmation Popup -->
+    <div id="order-popup" class="hidden">
+        <div class="popup-content">
+            <h3>Order Created Successfully! 🎉</h3>
+            <p><strong>Order ID:</strong> <span id="popup-order-id"></span></p>
+            <p><strong>Customer Name:</strong> <span id="popup-customer-name"></span></p>
+            <p><strong>Phone Number:</strong> <span id="popup-customer-phone"></span></p>
+            <p><strong>Number of Clothes:</strong> <span id="popup-cloth-count"></span></p>
+            <p><strong>Total Amount:</strong> ₹<span id="popup-total-amount"></span></p>
+            <p><strong>Order Date:</strong> <span id="popup-order-date"></span></p>
+            <p><strong>Status:</strong> <span id="popup-status">PENDING</span></p>
+            <button onclick="closeOrderPopup()">Close</button>
+        </div>
+    </div>
+
+    <!-- Customer Order History -->
+    <div id="customer-order-history" class="hidden">
+        <div class="modal-content">
+            <span class="close" onclick="closeHistory()">&times;</span>
+            <h3>Order History - <span id="customer-order-history-name"></span></h3>
+            <div class="history-table-container">
+                <table id="customer-orders-table">
+                    <thead>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Date</th>
+                            <th>Details</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <!--  Payment Modal  -->
+    <div id="payment-modal" class="modal hidden">
+        <div class="modal-content">
+            <span class="close" onclick="closePaymentModal()">&times;</span>
+            <h3>Record Payment</h3>
+
+            <!-- Message container INSIDE modal-content -->
+            <div id="payment-message" class="payment-message"></div>
+
+            <div class="form-group">
+                <label>Customer:</label>
+                <p id="payment-customer-name"></p>
+            </div>
+
+            <div class="form-group">
+                <label>Amount Due:</label>
+                <p id="payment-total-due">₹0.00</p>
+            </div>
+
+            <div class="form-group">
+                <label for="payment-amount">Amount Paid:</label>
+                <input type="number" id="payment-amount" min="0" step="5">
+            </div>
+
+            <div class="modal-actions">
+                <button onclick="processPayment()">Confirm Payment</button>
+                <button onclick="closePaymentModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Payment Transaction History -->
+    <div id="payment-transaction-history" class="hidden">
+        <div class="modal-content">
+            <span class="close" onclick="closeTransactionModal()">&times;</span>
+            <h3>Payment History - <span id="transaction-customer-name"></span></h3>
+            <div class="transaction-table-container">
+                <table id="transaction-table">
+                    <thead>
+                        <tr>
+                            <th>Transaction ID</th>
+                            <th>Amount Paid</th>
+                            <th>Payment Date</th>
+                            <th>Download Receipt</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div id="invoice-modal" class="modal hidden">
+        <div class="modal-content invoice-content">
+            <div class="modal-header">
+                <h3>Payment Receipt</h3>
+                <span class="close" onclick="closeInvoiceModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="business-info">
+                    <div class="business-logo">🏢</div>
+                    <div class="business-details">
+                        <h4>Laundry Management System</h4>
+                        <p>Professional Laundry Services</p>
+                    </div>
+                </div>
+                <div id="invoice-content" class="receipt-details"></div>
+                <div class="receipt-actions">
+                    <a id="download-receipt" target="_blank" class="download-btn">
+                        <span class="btn-icon">📄</span>
+                        <span class="btn-text">Download Receipt</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+
+</html>
