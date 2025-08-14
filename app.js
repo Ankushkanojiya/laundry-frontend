@@ -1,7 +1,9 @@
 
 //   Login  🔒
+const BASE_URL = window.location.hostname === "localhost"
+  ? "http://localhost:8080"
+  : "https://laundry-app-management.onrender.com";
 
-const BASE_URL = "https://laundry-app-management.onrender.com";
 
 
 // Debug function to help track navigation
@@ -101,7 +103,7 @@ async function loadStats() {
     try {
         const response = await fetch(`${BASE_URL}/api/stats`, {
             method: "GET",
-            credentials: "include"
+            headers: getAdminAuthHeaders()
         });
         const data = await response.json();
 
@@ -180,13 +182,16 @@ async function login() {
     formData.append("password", password);
 
     try {
-        const response = await fetch(`${BASE_URL}/login`, {
+        const response = await fetch(`${BASE_URL}/api/admin/auth/login`, {
             method: "POST",
-            headers: { "Content-Type": "application/x-www-form-urlencoded" },
-            body: formData,
-            credentials: "include"
-        })
-
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                username: username,
+                password: password
+            })
+        });
+        const result=await response.json();
+        localStorage.setItem('adminToken', result.token);
 
         if (!response.ok) {
             throw new Error('Login failed - Incorrect username or password ' + response.status);
@@ -240,6 +245,13 @@ async function login() {
     }
 }
 
+function getAdminAuthHeaders(){
+    const tokenForAdmin=localStorage.getItem('adminToken');
+    return {
+        'Authorization': `Bearer ${tokenForAdmin}`,
+        'Content-Type': 'application/json'
+    };
+}
 async function logoutAdmin() {
     try {
         await fetch(`${BASE_URL}/logout`, {
@@ -295,6 +307,7 @@ async function logoutAdmin() {
 
         // Clear any stored data
         localStorage.removeItem('sidebarCollapsed');
+        localStorage.removeItem('adminToken');
         
     } catch (error) {
         console.error('Logout failed:', error);
@@ -327,9 +340,9 @@ async function addCustomer() {
     try {
         const response = await fetch(`${BASE_URL}/api/customers`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: getAdminAuthHeaders(),
             body: JSON.stringify({ name, phoneNumber: phone }),
-            credentials: "include"
+            
         });
 
         const responseData = await response.text()
@@ -375,7 +388,7 @@ async function editCustomer(id) {
         showMessage('', 'clear', 'edit-customer-message');
         const response = await fetch(`${BASE_URL}/api/customers/${id}`, {
             method: "GET",
-            credentials: "include"
+            headers: getAdminAuthHeaders()
         });
         if (!response.ok) throw new Error('Failed to fetch customer');
 
@@ -400,9 +413,9 @@ async function updateCustomer() {
     try {
         const response = await fetch(`${BASE_URL}/api/customers/${currentCustomerId}`, {
             method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
+            headers: getAdminAuthHeaders(),
             body: JSON.stringify({ name, phoneNumber: phone }),
-            credentials: "include"
+            
         });
 
         if (!response.ok) {
@@ -428,7 +441,7 @@ async function deleteCustomer(id) {
     try {
         const response = await fetch(`${BASE_URL}/api/customers/${id}`, {
             method: 'DELETE',
-            credentials: "include"
+            headers: getAdminAuthHeaders()
         });
 
         if (!response.ok) {
@@ -450,7 +463,7 @@ async function refreshCustomers() {
     try {
         const response = await fetch(`${BASE_URL}/api/customers`, {
             method: "GET",
-            credentials: "include"
+            headers: getAdminAuthHeaders()
         });
         if (!response.ok) throw new Error('Failed to load customers');
 
@@ -536,7 +549,7 @@ async function loadCustomersForOrder() {
     try {
         const response = await fetch(`${BASE_URL}/api/customers`, {
             method: "GET",
-            credentials: "include"
+            headers: getAdminAuthHeaders()
         });
         const customers = await response.json();
         const select = document.getElementById('customer-select', '');
@@ -566,13 +579,13 @@ async function submitOrder() {
     try {
         const response = await fetch(`${BASE_URL}/api/orders`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: getAdminAuthHeaders(),
             body: JSON.stringify({
                 customerId: parseInt(customerSelect.value),
                 totalClothes: parseInt(clothCountInput.value),
                 serviceType: serviceType
             }),
-            credentials: "include"
+            
         });
 
         if (!response.ok) {
@@ -735,7 +748,7 @@ async function refreshOrders() {
 
         const response = await fetch(`${BASE_URL}/api/orders/filter?${new URLSearchParams(cleanFilters)}`, {
             method: "GET",
-            credentials: "include"
+            headers: getAdminAuthHeaders()
         });
         if (!response.ok) throw new Error('Failed to load orders');
 
@@ -817,7 +830,7 @@ async function updateStatus(orderId, newStatus) {
             `${BASE_URL}/api/orders/${orderId}/status?newStatus=${newStatus}`,
             {
                 method: 'PATCH',
-                credentials: "include"
+                headers: getAdminAuthHeaders()
             }
         );
 
@@ -838,7 +851,7 @@ async function populateCustomerFilter() {
     try {
         const response = await fetch(`${BASE_URL}/api/customers`, {
             method: "GET",
-            credentials: "include"
+            headers: getAdminAuthHeaders()
         });
 
         if (!response.ok) throw new Error("Customer not found");
@@ -875,7 +888,7 @@ async function viewOrders(customerId, customerName) {
 
         const response = await fetch(`${BASE_URL}/api/orders/customer/${customerId}`, {
             method: "GET",
-            credentials: "include"
+            headers: getAdminAuthHeaders()
         });
         if (!response.ok) throw new Error("Failed to fetch");
 
@@ -957,7 +970,7 @@ async function updateOrderStatus(orderId, newStatus, isInModal = false) {
             `${BASE_URL}/api/orders/${orderId}/status?newStatus=${newStatus}`,
             {
                 method: 'PATCH',
-                credentials: "include"
+                headers: getAdminAuthHeaders()
             }
         );
 
@@ -1054,7 +1067,7 @@ async function refreshPayments() {
         console.log("Fetching payment data...");
         const response = await fetch(`${BASE_URL}/api/payments`, {
             method: "GET",
-            credentials: "include"
+            headers: getAdminAuthHeaders()
         });
         console.log("Response status:", response.status);
         if (!response.ok) throw new Error("Failed to fetch the payments");
@@ -1204,12 +1217,12 @@ async function processPayment() {
             console.log("enter the process");
             const response = await fetch(`${BASE_URL}/api/payments`, {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers: getAdminAuthHeaders(),
                 body: JSON.stringify({
                     customerId: paymentCustomerId,
                     amount: amount
                 }),
-                credentials: "include"
+                
             });
 
             if (!response.ok) throw new Error("Admin payment failed");
@@ -1285,10 +1298,7 @@ async function sendPendingPayment(amount) {
     try {
         const response = await fetch(`${BASE_URL}/api/payments/pending`, {
             method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${localStorage.getItem("customerToken")}`
-            },
+            headers: getAuthHeaders(),
             body: JSON.stringify({ amount: amount })
         });
 
@@ -1382,7 +1392,7 @@ async function viewTransactions(customerId, customerName) {
         modal.classList.add('modal--active');
         const response = await fetch(`${BASE_URL}/api/payments/${customerId}/history`, {
             method: "GET",
-            credentials: "include"
+            headers: getAdminAuthHeaders()
         });
 
         const transactionData = await response.json();
@@ -1889,7 +1899,7 @@ async function loadInsights() {
     try {
         const response = await fetch(`${BASE_URL}/api/insights`, {
             method: "GET",
-            credentials: "include"
+            headers: getAdminAuthHeaders()
         })
 
         if (!response.ok) {
@@ -1950,8 +1960,7 @@ async function customerPayments() {
     try {
         const response = await fetch(`${BASE_URL}/api/payments/pending`, {
             method: 'GET',
-            credentials: 'include'
-
+            headers: getAdminAuthHeaders()
         });
         const data = await response.json();
         renderCustomerPayments(data);
@@ -1993,7 +2002,7 @@ async function verifyPendingPayment(pendingId, button) {
 
         const response = await fetch(`${BASE_URL}/api/payments/${pendingId}/verify`, {
             method: "PATCH",
-            credentials: "include"
+            headers: getAdminAuthHeaders()
         });
 
         if (!response.ok) throw new Error("Failed to verify");
