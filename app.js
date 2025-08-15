@@ -1,10 +1,10 @@
 
 //   Login  🔒
+// const BASE_URL = "https://laundry-app-management.onrender.com";
+
 const BASE_URL = window.location.hostname === "localhost"
   ? "http://localhost:8080"
   : "https://laundry-app-management.onrender.com";
-
-
 
 // Debug function to help track navigation
 function debugNav(sectionId, navText) {
