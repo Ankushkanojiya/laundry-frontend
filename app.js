@@ -1,6 +1,6 @@
 
 //   Login  🔒
-
+const BASE_URL = window.env.BACKEND_URL;
 
 // Debug function to help track navigation
 function debugNav(sectionId, navText) {
