@@ -73,7 +73,7 @@
     <div id="customer-dashboard" class="hidden">
         <!-- Sidebar Overlay -->
         <div id="sidebar-overlay" class="sidebar-overlay hidden" onclick="closeCustomerProfileSidebar()"></div>
-        
+
         <!-- Customer Profile Sidebar -->
         <div id="customer-profile-sidebar" class="profile-sidebar hidden">
             <div class="sidebar-header">
@@ -82,7 +82,7 @@
                     <span class="icon">✕</span>
                 </button>
             </div>
-            
+
             <div class="sidebar-content">
                 <!-- Customer Information Section -->
                 <div class="profile-info-section">
@@ -109,7 +109,7 @@
                     <button onclick="showPasswordChangeForm()" id="change-password-btn" class="change-password-btn">
                         <span class="icon">🔑</span> Change Password
                     </button>
-                    
+
                     <div id="password-change-form" class="password-form hidden">
                         <div id="customer-profile-message" class="message"></div>
                         <div class="form-group">
@@ -180,7 +180,7 @@
         </div>
 
         <div id="customer-orders-container"></div>
-        
+
         <div class="table-container">
             <h3>
                 <span class="icon">💵</span>
@@ -285,6 +285,23 @@
                 </div>
             </div>
 
+            <div id="dashboard-pending-table-section" style="margin-top: 20px;">
+                <h3>Pending Orders</h3>
+                <table id="dashboard-pending-orders" class="orders-table">
+                    <thead>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Customer</th>
+                            <th>Items</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Data will be populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+
             <!-- Manage Orders Section -->
             <div id="manage-order-section" class="hidden">
                 <div class="form-container">
@@ -363,9 +380,10 @@
                                 <label for="customer-name">Full Name</label>
                                 <div class="input-wrapper">
                                     <span class="input-icon">👤</span>
-                                    <input type="text" id="customer-name" placeholder="Enter customer's full name" pattern=".*[A-Za-z]+.*" autocomplete="name" required>
+                                    <input type="text" id="customer-name" placeholder="Enter customer's full name"
+                                        pattern=".*[A-Za-z]+.*" autocomplete="name" required>
                                 </div>
-                               
+
                             </div>
                             <div class="input-group">
                                 <label for="customer-phone">Phone Number</label>
@@ -374,7 +392,7 @@
                                     <input type="tel" id="customer-phone" placeholder="Enter 10-digit phone number"
                                         pattern="[0-9]{10}" maxlength="10" autocomplete="tel" required>
                                 </div>
-                                
+
                             </div>
                             <div class="form-actions">
                                 <button id="add-btn" class="primary-button" onclick="addCustomer()">
@@ -406,7 +424,7 @@
                                         <option value="">Select Customer</option>
                                     </select>
                                 </div>
-                                
+
                             </div>
 
                             <div class="input-group">
@@ -432,7 +450,7 @@
                                     <input type="number" id="cloth-count" placeholder="Enter number of clothes" min="1"
                                         required>
                                 </div>
-                                
+
                             </div>
 
                             <div class="form-actions">
@@ -541,6 +559,11 @@
                     <div class=" card total-customer-card">
                         <h3>Total Customers</h3>
                         <p id="total-customers">0</p>
+                    </div>
+
+                    <div class="card total-orders-card">
+                        <h3>Total Orders</h3>
+                        <p id="total-orders">0</p>
                     </div>
 
 

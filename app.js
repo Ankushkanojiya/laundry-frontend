@@ -1,6 +1,5 @@
 
 //   Login  🔒
-const BASE_URL = window.env.BACKEND_URL;
 
 
 // Debug function to help track navigation
@@ -22,6 +21,13 @@ function debugNav(sectionId, navText) {
 document.addEventListener('DOMContentLoaded', () => {
     console.log("DOM loaded. Waiting for login...");
 
+    // Debug: Check if dashboard table section exists at page load
+    const dashboardTableCheck = document.getElementById('dashboard-pending-table-section');
+    console.log("🔍 DOMContentLoaded: dashboard-pending-table-section exists:", !!dashboardTableCheck);
+    if (dashboardTableCheck) {
+        console.log("✅ Table section HTML:", dashboardTableCheck.outerHTML.substring(0, 200) + "...");
+    }
+
     // Initialize sections as hidden
     const sections = [
         'stats-cards',
@@ -40,6 +46,16 @@ document.addEventListener('DOMContentLoaded', () => {
             section.style.display = 'none';
         }
     });
+
+    // Also hide the dashboard pending table section initially
+    const dashboardTableSection = document.getElementById('dashboard-pending-table-section');
+    if (dashboardTableSection) {
+        dashboardTableSection.classList.add('hidden');
+        dashboardTableSection.style.display = 'none';
+        console.log("✅ Dashboard table section hidden successfully");
+    } else {
+        console.error("❌ Dashboard table section not found during initialization!");
+    }
 
     const token = localStorage.getItem("customerToken");
     console.log(token);
@@ -111,6 +127,106 @@ async function loadStats() {
     } catch (error) {
         console.error("Something Going wrong", error);
     }
+}
+
+async function loadDashboardPendingOrders() {
+    console.log("📋 loadDashboardPendingOrders() called...");
+    try {
+        // Calculate yesterday and day before yesterday dates
+        const today = new Date();
+        const yesterday = new Date(today);
+        yesterday.setDate(today.getDate() - 1);
+        
+        const dayBeforeYesterday = new Date(today);
+        dayBeforeYesterday.setDate(today.getDate() - 2);
+
+        // Format dates for API (YYYY-MM-DD)
+        const startDate = dayBeforeYesterday.toISOString().split('T')[0];
+        const endDate = yesterday.toISOString().split('T')[0];
+
+        // Fetch pending orders from the last 2 days
+        const response = await fetch(`${BASE_URL}/api/orders/filter?status=PENDING&startDate=${startDate}&endDate=${endDate}`, {
+            method: "GET",
+            headers: getAdminAuthHeaders()
+        });
+
+        if (!response.ok) throw new Error('Failed to load pending orders');
+
+        const orders = await response.json();
+        renderDashboardPendingOrders(orders);
+
+    } catch (error) {
+        console.error("Error loading dashboard pending orders:", error);
+        // Show error in the table
+        const tbody = document.querySelector('#dashboard-pending-orders tbody');
+        if (tbody) {
+            tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color: red;">Failed to load pending orders</td></tr>`;
+        }
+    }
+}
+
+function renderDashboardPendingOrders(orders) {
+    console.log("🔍 Looking for existing dashboard pending orders table...");
+    
+    // Simply look for the existing table in the HTML
+    const tbody = document.querySelector('#dashboard-pending-orders tbody');
+    console.log("Table tbody found:", !!tbody);
+    
+    if (!tbody) {
+        console.error("Dashboard pending orders table not found in DOM - check HTML structure");
+        return;
+    }
+
+    tbody.innerHTML = '';
+
+    if (orders.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center">No pending orders from yesterday and day before</td></tr>`;
+        return;
+    }
+
+    orders.forEach(order => {
+        const orderDate = new Date(order.orderDate);
+        const today = new Date();
+        
+        // Determine if it's from yesterday or day before
+        const dayDiff = Math.floor((today - orderDate) / (1000 * 60 * 60 * 24));
+        let dayLabel = '';
+        
+        if (dayDiff === 1) {
+            dayLabel = 'Yesterday';
+        } else if (dayDiff === 2) {
+            dayLabel = 'Day Before Yesterday';
+        } else {
+            dayLabel = orderDate.toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric'
+            });
+        }
+
+        const formattedDate = orderDate.toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric'
+        });
+
+        tbody.innerHTML += `
+            <tr>
+                <td>#${order.id}</td>
+                <td>${order.customerName}</td>
+                <td>${order.totalClothes} items</td>
+                <td>₹${order.totalAmount}</td>
+                <td>
+                    <button class="status-btn pending small"
+                            onclick="updateOrderStatus(${order.id}, 'IN_PROGRESS', false)">
+                        Start Order
+                    </button>
+                </td>
+            </tr>
+        `;
+    });
+    
+    console.log("✅ Successfully populated dashboard pending orders table with", orders.length, "orders");
 }
 
 function showTab(type) {
@@ -213,7 +329,8 @@ async function login() {
             mainContent.classList.add('expanded');
         }
 
-        loadStats();
+        // Automatically show dashboard after login
+        showDashboard();
         populateCustomerFilter();
 
         // Add showDashboard function if it doesn't exist
@@ -233,8 +350,6 @@ async function login() {
             }
         }
 
-
-        hideAllSections(); // Hide all sections initially
         await refreshCustomers();
     } catch (error) {
         showMessage(error.message, 'error', 'login-message');
@@ -251,10 +366,7 @@ function getAdminAuthHeaders(){
 }
 async function logoutAdmin() {
     try {
-        await fetch(`${BASE_URL}/logout`, {
-            method: "POST",
-            credentials: "include"
-        });
+        
 
         // Hide all sections
         const sectionsToHide = [
@@ -532,8 +644,25 @@ function closeSidebar() {
 }
 
 function showDashboard() {
+    console.log("🚀 showDashboard() called");
+    
+    // First, let's check if the table section exists before calling showSection
+    const preCheck = document.getElementById('dashboard-pending-table-section');
+    console.log("🔍 Pre-check: dashboard-pending-table-section exists:", !!preCheck);
+    
     showSection('stats-cards', 'Dashboard');
     loadStats(); // Refresh dashboard stats
+    
+    // Use requestAnimationFrame to ensure DOM is rendered before loading data
+    requestAnimationFrame(() => {
+        console.log("🔄 RequestAnimationFrame: About to load dashboard pending orders");
+        
+        // Check again after showSection
+        const postCheck = document.getElementById('dashboard-pending-table-section');
+        console.log("🔍 Post-check: dashboard-pending-table-section exists:", !!postCheck);
+        
+        loadDashboardPendingOrders();
+    });
 }
 
 function showTakeOrder() {
@@ -696,6 +825,13 @@ function hideAllSections() {
             section.style.display = 'none';
         }
     });
+
+    // Also hide the dashboard pending table section
+    const dashboardTableSection = document.getElementById('dashboard-pending-table-section');
+    if (dashboardTableSection) {
+        dashboardTableSection.classList.add('hidden');
+        dashboardTableSection.style.display = 'none';
+    }
 
     // Remove active state from all nav buttons
     const navButtons = document.querySelectorAll('.nav-item');
@@ -987,6 +1123,13 @@ async function updateOrderStatus(orderId, newStatus, isInModal = false) {
             await refreshOrders();
         }
 
+        // Also refresh dashboard pending orders if we're on the dashboard
+        const statsCards = document.getElementById('stats-cards');
+        if (statsCards && !statsCards.classList.contains('hidden')) {
+            loadDashboardPendingOrders();
+            loadStats(); // Refresh stats as well
+        }
+
     } catch (error) {
         showMessage(error.message, 'error');
     }
@@ -1010,6 +1153,19 @@ function showSection(sectionId, navText) {
     if (section) {
         section.classList.remove('hidden');
         section.style.display = sectionId === 'stats-cards' ? 'grid' : 'block';
+    }
+    
+    // If showing dashboard (stats-cards), also show the pending orders table section
+    if (sectionId === 'stats-cards') {
+        const dashboardTableSection = document.getElementById('dashboard-pending-table-section');
+        console.log("🔍 Dashboard table section found:", !!dashboardTableSection);
+        if (dashboardTableSection) {
+            dashboardTableSection.classList.remove('hidden');
+            dashboardTableSection.style.display = 'block';
+            console.log("✅ Dashboard table section is now visible");
+        } else {
+            console.error("❌ Dashboard table section not found!");
+        }
     }
     
     // Make sure main content is visible
@@ -1053,8 +1209,8 @@ function initializeDashboard() {
         'customer-payment-section': 'Customer Payments'
     };
 
-    // Show dashboard initially
-    showSection('stats-cards', sections['stats-cards']);
+    // Dashboard will be shown by showDashboard() call in login function
+    // Just load initial data here
     loadStats();
     populateCustomerFilter();
 }
@@ -1907,7 +2063,7 @@ async function loadInsights() {
         const data = await response.json();
         console.log("insights:", data);
 
-
+        document.getElementById("total-orders").textContent = data.totalOrders;
         document.getElementById("total-customers").textContent = data.totalCustomers;
         document.getElementById("total-revenue").textContent = `₹${data.totalRevenue.toFixed(2)}`;
 
