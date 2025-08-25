@@ -1727,8 +1727,11 @@ async function loginCustomer() {
         const result = await response.json();
         showCustomerAuthMessage("Login successful!", "success");
         localStorage.setItem("customerToken", result.token)
+        console.log("Login token:", result.token);
         localStorage.setItem("customerId", result.customerId);
+        console.log("Customer ID:", result.customerId);
         localStorage.setItem("customerName", result.customerName);
+        console.log("Customer Name:", result.customerName);
         localStorage.setItem("customerPhone", phone); // Store the phone number used for login
 
 
@@ -2193,9 +2196,9 @@ function renderCustomerPayments(payments) {
             <td>${payment.customerName}</td>
             <td>₹${payment.amount.toFixed(2)}</td>
             <td>${formatDateTime(payment.timestamp)}</td>
-            <td>${payment.status}</td>
             <td>
                 <button onclick="verifyPendingPayment(${payment.transactionId}, this)">Verify</button>
+                <button onclick="rejectPendingPayment(${payment.transactionId}, this)">Reject</button>
             </td>
         `;
 
@@ -2223,7 +2226,7 @@ async function verifyPendingPayment(pendingId, button) {
             <td>${updated.customerName}</td>
             <td>₹${updated.amount.toFixed(2)}</td>
             <td>${formatDateTime(updated.timestamp)}</td>
-            <td>${updated.status}</td>
+            
             <td><a class="download-btn" href="${BASE_URL}/api/receipts/${updated.transactionId}/download" target="_blank">Download 📄</a></td>
         `;
 
@@ -2232,6 +2235,38 @@ async function verifyPendingPayment(pendingId, button) {
         showMessage("Verification failed ❌", "error");
         button.disabled = false;
         button.textContent = "Verify";
+    }
+}
+
+async function rejectPendingPayment(pendingId,button) {
+    try{
+        button.disabled = true;
+        button.textContent = "Rejecting...";
+
+        const response = await fetch(`${BASE_URL}/api/payments/${pendingId}/reject`, {
+            method: "PATCH",
+            headers: getAdminAuthHeaders()
+        });
+
+        if (!response.ok) throw new Error("Failed to reject");
+
+        const updated = await response.json();
+
+        const row = button.closest("tr");
+        row.innerHTML = `
+            <td>${updated.transactionId}</td>
+            <td>${updated.customerName}</td>
+            <td>₹${updated.amount.toFixed(2)}</td>
+            <td>${formatDateTime(updated.timestamp)}</td>
+            
+            <td>Rejected ❌</td>
+        `;
+
+        showMessage("Payment rejected successfully ❌", "success");
+    } catch (error) {
+        showMessage("Rejection failed ❌", "error");
+        button.disabled = false;
+        button.textContent = "Reject";
     }
 }
 
