@@ -490,6 +490,26 @@ function highlightDuplicatePhone() {
     }, 3000);
 }
 
+function highlightCustomerSelect() {
+    const customerSelect = document.getElementById('customer-select');
+    customerSelect.classList.add('input-error');
+
+    // Clear error after 3 seconds
+    setTimeout(() => {
+        customerSelect.classList.remove('input-error');
+    }, 3000);
+}
+
+function highlightClothCountInput() {
+    const clothCountInput = document.getElementById('cloth-count');
+    clothCountInput.classList.add('input-error');
+
+    // Clear error after 3 seconds
+    setTimeout(() => {
+        clothCountInput.classList.remove('input-error');
+    }, 3000);
+}
+
 // <!--   Edit customer  ✍️✍️✍️-->
 let currentCustomerId = null;
 async function editCustomer(id) {
@@ -668,6 +688,22 @@ function showDashboard() {
 function showTakeOrder() {
     showSection('take-order-section', 'Take Order');
     loadCustomersForOrder(); // Load customers in dropdown
+    // Clear any previous error messages
+    showMessage('', 'clear', 'order-message');
+    
+    // Add event listeners to clear error highlighting when user interacts with fields
+    const customerSelect = document.getElementById('customer-select');
+    const clothCountInput = document.getElementById('cloth-count');
+    
+    // Clear error styling when user selects a customer
+    customerSelect.addEventListener('change', function() {
+        this.classList.remove('input-error');
+    });
+    
+    // Clear error styling when user starts typing in cloth count
+    clothCountInput.addEventListener('input', function() {
+        this.classList.remove('input-error');
+    });
 }
 
 //  populate the customer in Take order
@@ -697,8 +733,25 @@ async function submitOrder() {
     const clothCountInput = document.getElementById('cloth-count');
     const serviceType = document.querySelector('input[name="serviceType"]:checked').value;
 
-    if (!customerSelect.value || !clothCountInput.value) {
-        showMessage('Please select customer and enter cloth count', 'error');
+    // Validate customer selection
+    if (!customerSelect.value) {
+        showMessage('Please select a customer', 'error', 'order-message');
+        highlightCustomerSelect();
+        return;
+    }
+
+    // Validate cloth count
+    if (!clothCountInput.value) {
+        showMessage('Please enter cloth count', 'error', 'order-message');
+        highlightClothCountInput();
+        return;
+    }
+
+    // Validate cloth count is a positive number
+    const clothCount = parseInt(clothCountInput.value);
+    if (isNaN(clothCount) || clothCount <= 0) {
+        showMessage('Cloth count must be a positive number', 'error', 'order-message');
+        highlightClothCountInput();
         return;
     }
 
@@ -724,7 +777,7 @@ async function submitOrder() {
         resetOrderForm();
         loadStats();
     } catch (error) {
-        showMessage(error.message, 'error');
+        showMessage(error.message, 'error', 'order-message');
     }
 }
 //  Receipt 🧾🧾🧾
@@ -751,6 +804,8 @@ function closeOrderPopup() {
 function resetOrderForm() {
     document.getElementById('customer-select').value = '';
     document.getElementById('cloth-count').value = '';
+    // Clear any error messages
+    showMessage('', 'clear', 'order-message');
 }
 
 
