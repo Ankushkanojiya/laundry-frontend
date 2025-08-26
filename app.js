@@ -80,7 +80,7 @@ document.addEventListener('DOMContentLoaded', () => {
         adminNav.addEventListener('scroll', () => {
             const isStart = adminNav.scrollLeft === 0;
             const isEnd = adminNav.scrollLeft + adminNav.clientWidth === adminNav.scrollWidth;
-            
+
             adminNav.classList.toggle('at-start', isStart);
             adminNav.classList.toggle('at-end', isEnd);
         });
@@ -136,7 +136,7 @@ async function loadDashboardPendingOrders() {
         const today = new Date();
         const yesterday = new Date(today);
         yesterday.setDate(today.getDate() - 1);
-        
+
         const dayBeforeYesterday = new Date(today);
         dayBeforeYesterday.setDate(today.getDate() - 2);
 
@@ -167,11 +167,11 @@ async function loadDashboardPendingOrders() {
 
 function renderDashboardPendingOrders(orders) {
     console.log("🔍 Looking for existing dashboard pending orders table...");
-    
+
     // Simply look for the existing table in the HTML
     const tbody = document.querySelector('#dashboard-pending-orders tbody');
     console.log("Table tbody found:", !!tbody);
-    
+
     if (!tbody) {
         console.error("Dashboard pending orders table not found in DOM - check HTML structure");
         return;
@@ -187,11 +187,11 @@ function renderDashboardPendingOrders(orders) {
     orders.forEach(order => {
         const orderDate = new Date(order.orderDate);
         const today = new Date();
-        
+
         // Determine if it's from yesterday or day before
         const dayDiff = Math.floor((today - orderDate) / (1000 * 60 * 60 * 24));
         let dayLabel = '';
-        
+
         if (dayDiff === 1) {
             dayLabel = 'Yesterday';
         } else if (dayDiff === 2) {
@@ -225,7 +225,7 @@ function renderDashboardPendingOrders(orders) {
             </tr>
         `;
     });
-    
+
     console.log("✅ Successfully populated dashboard pending orders table with", orders.length, "orders");
 }
 
@@ -253,7 +253,7 @@ function showTab(type) {
 function toggleAuthMode(mode) {
     const loginSection = document.getElementById('customer-login-section');
     const registerSection = document.getElementById('customer-register-section');
-    
+
     if (mode === 'login') {
         loginSection.classList.remove('hidden');
         registerSection.classList.add('hidden');
@@ -261,7 +261,7 @@ function toggleAuthMode(mode) {
         loginSection.classList.add('hidden');
         registerSection.classList.remove('hidden');
     }
-    
+
     // Clear any existing messages
     document.getElementById('customer-auth-message').textContent = '';
 }
@@ -303,7 +303,7 @@ async function login() {
                 password: password
             })
         });
-        const result=await response.json();
+        const result = await response.json();
         localStorage.setItem('adminToken', result.token);
 
         if (!response.ok) {
@@ -323,7 +323,7 @@ async function login() {
         // Initialize sidebar state
         const sidebar = document.getElementById('admin-sidebar');
         const sidebarCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
-        
+
         if (sidebarCollapsed) {
             sidebar.classList.add('collapsed');
             mainContent.classList.add('expanded');
@@ -335,15 +335,15 @@ async function login() {
 
         // Add showDashboard function if it doesn't exist
         if (typeof showDashboard !== 'function') {
-            window.showDashboard = function() {
+            window.showDashboard = function () {
                 hideAllSections();
                 const mainContent = document.getElementById('main-content');
                 mainContent.style.display = 'block';
-                
+
                 const statsCards = document.getElementById('stats-cards');
                 statsCards.classList.remove('hidden');
                 statsCards.style.display = 'grid';
-                
+
                 setActiveNavItem('Dashboard');
                 loadStats(); // Refresh dashboard stats
                 closeSidebar(); // Close sidebar after navigation
@@ -357,8 +357,8 @@ async function login() {
     }
 }
 
-function getAdminAuthHeaders(){
-    const tokenForAdmin=localStorage.getItem('adminToken');
+function getAdminAuthHeaders() {
+    const tokenForAdmin = localStorage.getItem('adminToken');
     return {
         'Authorization': `Bearer ${tokenForAdmin}`,
         'Content-Type': 'application/json'
@@ -366,7 +366,7 @@ function getAdminAuthHeaders(){
 }
 async function logoutAdmin() {
     try {
-        
+
 
         // Hide all sections
         const sectionsToHide = [
@@ -398,18 +398,18 @@ async function logoutAdmin() {
         modals.forEach(modal => {
             modal.classList.add('hidden');
         });
-        
+
         // Show auth section properly
         const authSection = document.getElementById("auth-section");
         authSection.style.display = "flex";
         document.getElementById("admin-form").classList.remove("hidden");
         document.getElementById("customer-form").classList.add("hidden");
-        
+
         // Reset form fields
         document.getElementById("username").value = "";
         document.getElementById("password").value = "";
         document.getElementById("login-message").textContent = "";
-        
+
         // Reset active tab
         document.getElementById("tab-admin").classList.add("active-tab");
         document.getElementById("tab-customer").classList.remove("active-tab");
@@ -417,7 +417,7 @@ async function logoutAdmin() {
         // Clear any stored data
         localStorage.removeItem('sidebarCollapsed');
         localStorage.removeItem('adminToken');
-        
+
     } catch (error) {
         console.error('Logout failed:', error);
         // Still attempt to show login screen even if logout request fails
@@ -451,7 +451,7 @@ async function addCustomer() {
             method: 'POST',
             headers: getAdminAuthHeaders(),
             body: JSON.stringify({ name, phoneNumber: phone }),
-            
+
         });
 
         const responseData = await response.text()
@@ -544,7 +544,7 @@ async function updateCustomer() {
             method: 'PUT',
             headers: getAdminAuthHeaders(),
             body: JSON.stringify({ name, phoneNumber: phone }),
-            
+
         });
 
         if (!response.ok) {
@@ -665,22 +665,22 @@ function closeSidebar() {
 
 function showDashboard() {
     console.log("🚀 showDashboard() called");
-    
+
     // First, let's check if the table section exists before calling showSection
     const preCheck = document.getElementById('dashboard-pending-table-section');
     console.log("🔍 Pre-check: dashboard-pending-table-section exists:", !!preCheck);
-    
+
     showSection('stats-cards', 'Dashboard');
     loadStats(); // Refresh dashboard stats
-    
+
     // Use requestAnimationFrame to ensure DOM is rendered before loading data
     requestAnimationFrame(() => {
         console.log("🔄 RequestAnimationFrame: About to load dashboard pending orders");
-        
+
         // Check again after showSection
         const postCheck = document.getElementById('dashboard-pending-table-section');
         console.log("🔍 Post-check: dashboard-pending-table-section exists:", !!postCheck);
-        
+
         loadDashboardPendingOrders();
     });
 }
@@ -690,18 +690,18 @@ function showTakeOrder() {
     loadCustomersForOrder(); // Load customers in dropdown
     // Clear any previous error messages
     showMessage('', 'clear', 'order-message');
-    
+
     // Add event listeners to clear error highlighting when user interacts with fields
     const customerSelect = document.getElementById('customer-select');
     const clothCountInput = document.getElementById('cloth-count');
-    
+
     // Clear error styling when user selects a customer
-    customerSelect.addEventListener('change', function() {
+    customerSelect.addEventListener('change', function () {
         this.classList.remove('input-error');
     });
-    
+
     // Clear error styling when user starts typing in cloth count
-    clothCountInput.addEventListener('input', function() {
+    clothCountInput.addEventListener('input', function () {
         this.classList.remove('input-error');
     });
 }
@@ -764,7 +764,7 @@ async function submitOrder() {
                 totalClothes: parseInt(clothCountInput.value),
                 serviceType: serviceType
             }),
-            
+
         });
 
         if (!response.ok) {
@@ -838,7 +838,7 @@ function setActiveNavItem(activeItem) {
     // Remove active class from all nav items
     const navItems = document.querySelectorAll('.nav-item');
     navItems.forEach(item => item.classList.remove('active'));
-    
+
     // Add active class to the clicked item
     navItems.forEach(item => {
         if (item.textContent.trim() === activeItem) {
@@ -851,7 +851,7 @@ function setActiveNavButton(buttonText) {
     // Remove active class from all nav items
     const navButtons = document.querySelectorAll('.nav-item');
     navButtons.forEach(button => button.classList.remove('active'));
-    
+
     // Find and activate the button with matching text
     navButtons.forEach(button => {
         if (button.textContent.trim() === buttonText) {
@@ -871,7 +871,7 @@ function hideAllSections() {
         'customer-payment-section',
         'insights-section'
     ];
-    
+
     // Hide all sections
     sections.forEach(sectionId => {
         const section = document.getElementById(sectionId);
@@ -1202,14 +1202,14 @@ function closeHistory() {
 function showSection(sectionId, navText) {
     debugNav(sectionId, navText); // Add debugging
     hideAllSections();
-    
+
     // Show the selected section
     const section = document.getElementById(sectionId);
     if (section) {
         section.classList.remove('hidden');
         section.style.display = sectionId === 'stats-cards' ? 'grid' : 'block';
     }
-    
+
     // If showing dashboard (stats-cards), also show the pending orders table section
     if (sectionId === 'stats-cards') {
         const dashboardTableSection = document.getElementById('dashboard-pending-table-section');
@@ -1222,27 +1222,27 @@ function showSection(sectionId, navText) {
             console.error("❌ Dashboard table section not found!");
         }
     }
-    
+
     // Make sure main content is visible
     const mainContent = document.getElementById('main-content');
     if (mainContent) {
         mainContent.style.display = 'block';
     }
-    
+
     // Set active state on the sidebar button
     const navItems = document.querySelectorAll('.nav-item');
     navItems.forEach(item => {
         const itemContent = item.textContent.trim();
         const itemText = itemContent.replace(/[^\x20-\x7E]/g, '').trim(); // Remove emojis and keep only printable ASCII
         const buttonText = navText.trim();
-        
+
         if (itemText === buttonText) {
             item.classList.add('active');
         } else {
             item.classList.remove('active');
         }
     });
-    
+
     closeSidebar();
 }
 
@@ -1367,14 +1367,14 @@ async function showCustomerPaymentModal() {
             headers: getAuthHeaders()
         });
         if (!response.ok) throw new Error("Failed to fetch balance");
-        
+
         const balance = parseFloat(await response.text());
         paymentBalance = balance;
 
         document.getElementById("payment-customer-name").textContent = paymentCustomerName;
         document.getElementById("payment-total-due").textContent = `₹${balance.toFixed(2)}`;
         document.getElementById("payment-amount").value = "";
-        
+
         // Show modal with proper classes for animation and visibility
         const modal = document.getElementById("payment-modal");
         modal.classList.remove("hidden");
@@ -1430,7 +1430,7 @@ async function processPayment() {
                     customerId: paymentCustomerId,
                     amount: amount
                 }),
-                
+
             });
 
             if (!response.ok) throw new Error("Admin payment failed");
@@ -1471,7 +1471,7 @@ async function processPayment() {
                     showPaymentMessage("Payment not recorded. Please try again.", "error");
                 }
             }, 5000);
-            
+
 
         } else {
             throw new Error("Unknown payment context");
@@ -1485,19 +1485,19 @@ async function processPayment() {
 }
 
 function launchUpiIntent(amount) {
-    
-    const txnRef = "TXN" + Date.now(); 
+
+    const txnRef = "TXN" + Date.now();
 
     const upiLink = `upi://pay` +
-        `?pa=9619723090@okbizaxis` +  
-        `&pn=Sanjay Power Laundry` +                        
-        `&tr=${txnRef}` +                 
-        `&txnId=${txnRef}` +               
-        `&am=${amount}` +                 
-        `&cu=INR`;                        
+        `?pa=9619723090@okbizaxis` +
+        `&pn=Sanjay Power Laundry` +
+        `&tr=${txnRef}` +
+        `&txnId=${txnRef}` +
+        `&am=${amount}` +
+        `&cu=INR`;
 
     console.log("Generated UPI Link:", upiLink);
-    window.location.href = upiLink; 
+    window.location.href = upiLink;
 }
 
 
@@ -1561,8 +1561,35 @@ function showInvoiceModal(payment) {
     `;
     console.log("printed the innerhtml");
     if (downloadLink) {
-        downloadLink.href = `${BASE_URL}/api/receipts/${payment.transactionId}/download`;
-        downloadLink.setAttribute("download", `receipt_${payment.transactionId}.pdf`);
+        downloadLink.onclick = async (e) => {
+            e.preventDefault();
+            const url = `${BASE_URL}/api/receipts/${transactionId}/download`;
+            try {
+                const response = await fetch(url, {
+                    method: 'GET',
+                    headers: getAdminAuthHeaders(),
+                });
+
+                if (!response.ok) throw new Error("Failed to fetch receipt");
+
+                const blob = await response.blob();
+                const downloadUrl = window.URL.createObjectURL(blob);
+
+                const a = document.createElement("a");
+                a.href = downloadUrl;
+                a.download = `receipt_${payment.transactionId}.pdf`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+
+                window.URL.revokeObjectURL(downloadUrl);
+
+
+            } catch (error) {
+                console.error("❌ Error downloading receipt:", error);
+                alert("Failed to download receipt. Please try again.");
+            }
+        }
     }
 
     console.log("Download link");
@@ -1769,7 +1796,7 @@ async function fetchCustomerBalance(customerId) {
         if (!response.ok) throw new Error("Failed to fetch balance");
 
         const balance = parseFloat(await response.text());
-        
+
         const display = document.getElementById("customer-balance");
         display.textContent = balance.toFixed(2);
 
@@ -1904,12 +1931,12 @@ function logoutCustomer() {
         document.getElementById("customer-balance").textContent = "0";
         document.getElementById("customer-order-body").innerHTML = "";
         document.getElementById("customer-payment-body").innerHTML = "";
-        
+
         // Show auth section properly
         const authSection = document.getElementById("auth-section");
         authSection.classList.remove("hidden");
         authSection.style.display = "flex";
-        
+
         // Switch to customer tab and show login form
         showTab("customer");
         toggleAuthMode('login');
@@ -1918,7 +1945,7 @@ function logoutCustomer() {
         document.getElementById("customer-phone-login").value = "";
         document.getElementById("customer-password-login").value = "";
         document.getElementById("customer-auth-message").textContent = "";
-        
+
     } catch (error) {
         console.error('Logout error:', error);
         // Still attempt to show login screen
@@ -1931,47 +1958,47 @@ function logoutCustomer() {
 function showCustomerProfile() {
     const sidebar = document.getElementById("customer-profile-sidebar");
     const overlay = document.getElementById("sidebar-overlay");
-    
+
     // First make sidebar visible but still off-screen
     sidebar.classList.remove("hidden");
     overlay.classList.remove("hidden");
-    
+
     // Force a reflow to ensure the visibility change is applied
     sidebar.offsetHeight;
-    
+
     // Then trigger the slide-in animation
     requestAnimationFrame(() => {
         sidebar.classList.add("active");
     });
-    
+
     // Load customer information
     const customerName = localStorage.getItem("customerName");
     const customerPhone = localStorage.getItem("customerPhone");
-    
+
     // Display customer information with fallbacks
     const nameElement = document.getElementById("profile-customer-name");
     const phoneElement = document.getElementById("profile-customer-phone");
-    
+
     if (nameElement) {
         nameElement.textContent = customerName || "Not available";
     }
     if (phoneElement) {
         phoneElement.textContent = customerPhone || "Not available";
     }
-    
+
     // Hide password change form initially
     const passwordForm = document.getElementById("password-change-form");
     const changePasswordBtn = document.getElementById("change-password-btn");
-    
+
     if (passwordForm) passwordForm.classList.add("hidden");
     if (changePasswordBtn) changePasswordBtn.classList.remove("hidden");
-    
+
     // Clear any previous messages and form values
     const messageElement = document.getElementById("customer-profile-message");
     if (messageElement) {
         messageElement.textContent = "";
     }
-    
+
     const oldPasswordField = document.getElementById("old_password");
     const newPasswordField = document.getElementById("new_password");
     if (oldPasswordField) oldPasswordField.value = "";
@@ -1981,33 +2008,33 @@ function showCustomerProfile() {
 function closeCustomerProfileSidebar() {
     const sidebar = document.getElementById("customer-profile-sidebar");
     const overlay = document.getElementById("sidebar-overlay");
-    
+
     if (sidebar) {
         // Start the slide-out animation
         sidebar.classList.remove("active");
-        
+
         // Hide overlay immediately
         if (overlay) overlay.classList.add("hidden");
-        
+
         // Wait for animation to complete before fully hiding
         setTimeout(() => {
             sidebar.classList.add("hidden");
         }, 300); // Match the CSS transition duration
     }
-    
+
     // Reset sidebar state
     const passwordForm = document.getElementById("password-change-form");
     const changePasswordBtn = document.getElementById("change-password-btn");
-    
+
     if (passwordForm) passwordForm.classList.add("hidden");
     if (changePasswordBtn) changePasswordBtn.classList.remove("hidden");
-    
+
     // Clear form values
     const oldPasswordField = document.getElementById("old_password");
     const newPasswordField = document.getElementById("new_password");
     if (oldPasswordField) oldPasswordField.value = "";
     if (newPasswordField) newPasswordField.value = "";
-    
+
     // Clear any messages
     const messageElement = document.getElementById("customer-profile-message");
     if (messageElement) {
@@ -2018,7 +2045,7 @@ function closeCustomerProfileSidebar() {
 function showPasswordChangeForm() {
     const passwordForm = document.getElementById("password-change-form");
     const changePasswordBtn = document.getElementById("change-password-btn");
-    
+
     if (passwordForm) passwordForm.classList.remove("hidden");
     if (changePasswordBtn) changePasswordBtn.classList.add("hidden");
 }
@@ -2026,16 +2053,16 @@ function showPasswordChangeForm() {
 function cancelPasswordChange() {
     const passwordForm = document.getElementById("password-change-form");
     const changePasswordBtn = document.getElementById("change-password-btn");
-    
+
     if (passwordForm) passwordForm.classList.add("hidden");
     if (changePasswordBtn) changePasswordBtn.classList.remove("hidden");
-    
+
     // Clear form values
     const oldPasswordField = document.getElementById("old_password");
     const newPasswordField = document.getElementById("new_password");
     if (oldPasswordField) oldPasswordField.value = "";
     if (newPasswordField) newPasswordField.value = "";
-    
+
     // Clear any messages
     const messageElement = document.getElementById("customer-profile-message");
     if (messageElement) {
@@ -2073,12 +2100,12 @@ async function submitPasswordChange() {
             const newPasswordField = document.getElementById("new_password");
             const passwordForm = document.getElementById("password-change-form");
             const changePasswordBtn = document.getElementById("change-password-btn");
-            
+
             if (oldPasswordField) oldPasswordField.value = "";
             if (newPasswordField) newPasswordField.value = "";
             if (passwordForm) passwordForm.classList.add("hidden");
             if (changePasswordBtn) changePasswordBtn.classList.remove("hidden");
-            
+
             setTimeout(() => {
                 const messageElement = document.getElementById("customer-profile-message");
                 if (messageElement) {
@@ -2131,7 +2158,7 @@ async function loadInsights() {
         if (!data.topCustomers || data.topCustomers.length === 0) {
             topBody.innerHTML = `<tr><td colspan="2">No top customers found</td></tr>`;
         }
-        
+
         data.topCustomers.forEach(c => {
             topBody.innerHTML += `
             <tr>
@@ -2141,9 +2168,9 @@ async function loadInsights() {
         });
 
         const dueBody = document.getElementById("due-customers-body");
-        
+
         dueBody.innerHTML = "";
-        if(data.customersWithDue.length===0){
+        if (data.customersWithDue.length === 0) {
             dueBody.innerHTML = `<tr><td colspan="2">No customers with due payments found</td></tr>`;
             return;
         }
@@ -2238,8 +2265,8 @@ async function verifyPendingPayment(pendingId, button) {
     }
 }
 
-async function rejectPendingPayment(pendingId,button) {
-    try{
+async function rejectPendingPayment(pendingId, button) {
+    try {
         button.disabled = true;
         button.textContent = "Rejecting...";
 
