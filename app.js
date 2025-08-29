@@ -21,7 +21,7 @@ function debugNav(sectionId, navText) {
 document.addEventListener('DOMContentLoaded', () => {
     console.log("DOM loaded. Waiting for login...");
 
-    // Debug: Check if dashboard table section exists at page load
+    // Check if dashboard table section exists at page load
     const dashboardTableCheck = document.getElementById('dashboard-pending-table-section');
     console.log("🔍 DOMContentLoaded: dashboard-pending-table-section exists:", !!dashboardTableCheck);
     if (dashboardTableCheck) {
@@ -688,7 +688,7 @@ function showDashboard() {
 function showTakeOrder() {
     showSection('take-order-section', 'Take Order');
     loadCustomersForOrder(); // Load customers in dropdown
-    // Clear any previous error messages
+    
     showMessage('', 'clear', 'order-message');
 
     // Add event listeners to clear error highlighting when user interacts with fields
@@ -791,11 +791,19 @@ function showOrderPopup(order) {
     document.getElementById('popup-customer-name').textContent = order.customerName;
     document.getElementById('popup-customer-phone').textContent = order.customerPhone;
     document.getElementById('popup-cloth-count').textContent = order.totalClothes;
-    document.getElementById('popup-total-amount').textContent = order.totalAmount;
+    document.getElementById('popup-total-amount').textContent = `₹ ${order.totalAmount}`;
     document.getElementById('popup-order-date').textContent = orderDate;
     document.getElementById('popup-status').textContent = order.status;
     document.getElementById('order-popup').classList.remove('hidden');
+    
+    
 }
+
+document.getElementById("order-popup").addEventListener("click", function(e) {
+    if (e.target === this) { 
+        closeOrderPopup();
+    }
+});
 
 function closeOrderPopup() {
     document.getElementById('order-popup').classList.add('hidden');
@@ -804,7 +812,7 @@ function closeOrderPopup() {
 function resetOrderForm() {
     document.getElementById('customer-select').value = '';
     document.getElementById('cloth-count').value = '';
-    // Clear any error messages
+    
     showMessage('', 'clear', 'order-message');
 }
 
@@ -887,6 +895,24 @@ function hideAllSections() {
         dashboardTableSection.classList.add('hidden');
         dashboardTableSection.style.display = 'none';
     }
+
+    // Close all open modals and popups
+    const modalsAndPopups = [
+        'order-popup',
+        'edit-customer-modal',
+        'customer-order-history',
+        'payment-modal',
+        'payment-transaction-history',
+        'invoice-modal'
+    ];
+    
+    modalsAndPopups.forEach(modalId => {
+        const modal = document.getElementById(modalId);
+        if (modal) {
+            modal.classList.add('hidden');
+            modal.classList.remove('modal--active');
+        }
+    });
 
     // Remove active state from all nav buttons
     const navButtons = document.querySelectorAll('.nav-item');
@@ -1533,6 +1559,18 @@ console.log("About to show invoice...");
 console.log("Invoice modal exists?", document.getElementById("invoice-modal"));
 console.log("Invoice content exists?", document.getElementById("invoice-content"));
 
+function getHeaders() {
+    
+    const token = localStorage.getItem("adminToken") || localStorage.getItem("customerToken");
+    if (!token) {
+        throw new Error("No authentication token found");
+    }
+    return {
+        "Authorization": "Bearer " + token,
+        "Content-Type": "application/json"
+    };
+}
+
 function showInvoiceModal(payment) {
     console.log("🧾 Showing invoice modal for:", payment);
 
@@ -1564,10 +1602,11 @@ function showInvoiceModal(payment) {
         downloadLink.onclick = async (e) => {
             e.preventDefault();
             const url = `${BASE_URL}/api/receipts/${transactionId}/download`;
+            
             try {
                 const response = await fetch(url, {
                     method: 'GET',
-                    headers: getAdminAuthHeaders(),
+                    headers: getHeaders(),
                 });
 
                 if (!response.ok) throw new Error("Failed to fetch receipt");
@@ -2253,8 +2292,9 @@ async function verifyPendingPayment(pendingId, button) {
             <td>${updated.customerName}</td>
             <td>₹${updated.amount.toFixed(2)}</td>
             <td>${formatDateTime(updated.timestamp)}</td>
-            
-            <td><a class="download-btn" href="${BASE_URL}/api/receipts/${updated.transactionId}/download" target="_blank">Download 📄</a></td>
+            <td>
+                <button class="download-btn" onclick="downloadReceipt(${updated.transactionId})">Download 📄</button>
+            </td>
         `;
 
         showMessage("Verified and receipt generated ✅", "success");
@@ -2262,6 +2302,29 @@ async function verifyPendingPayment(pendingId, button) {
         showMessage("Verification failed ❌", "error");
         button.disabled = false;
         button.textContent = "Verify";
+    }
+}
+
+async function downloadReceipt(transactionId) {
+    try {
+        const response = await fetch(`${BASE_URL}/api/receipts/${transactionId}/download`, {
+            method: "GET",
+            headers: getAdminAuthHeaders()
+        });
+
+        if (!response.ok) throw new Error("Failed to download receipt");
+
+        const blob = await response.blob();
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `receipt_${transactionId}.pdf`;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+    } catch (error) {
+        showMessage("Receipt download failed ❌", "error");
     }
 }
 

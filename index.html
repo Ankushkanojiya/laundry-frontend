@@ -293,6 +293,7 @@
                             <th>Order ID</th>
                             <th>Customer</th>
                             <th>Items</th>
+                            <th>Amount</th>
                             <th>Action</th>
                         </tr>
                     </thead>
@@ -639,15 +640,19 @@
     <!-- Order Confirmation Popup -->
     <div id="order-popup" class="hidden">
         <div class="popup-content">
+           
             <h3>Order Created Successfully! 🎉</h3>
             <p><strong>Order ID:</strong> <span id="popup-order-id"></span></p>
             <p><strong>Customer Name:</strong> <span id="popup-customer-name"></span></p>
             <p><strong>Phone Number:</strong> <span id="popup-customer-phone"></span></p>
             <p><strong>Number of Clothes:</strong> <span id="popup-cloth-count"></span></p>
-            <p><strong>Total Amount:</strong> ₹<span id="popup-total-amount"></span></p>
+            <p><strong>Total Amount:</strong> <span id="popup-total-amount"></span></p>
             <p><strong>Order Date:</strong> <span id="popup-order-date"></span></p>
             <p><strong>Status:</strong> <span id="popup-status">PENDING</span></p>
-            <button onclick="closeOrderPopup()">Close</button>
+            <div style="margin-top: 15px;">
+                <button onclick="closeOrderPopup()">Close</button>
+      
+            </div>
         </div>
     </div>
 
