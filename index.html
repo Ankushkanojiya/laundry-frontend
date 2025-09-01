@@ -30,7 +30,7 @@
                 <div class="form-group">
                     <input type="password" id="password" placeholder="Password">
                 </div>
-                <button onclick="login()">Login</button>
+                <button id="login-button">Login</button>
                 <p id="login-message"></p>
             </div>
 
@@ -207,7 +207,7 @@
         <!-- Admin Header -->
         <header class="admin-header">
             <div class="header-content">
-                <button id="sidebar-toggle" class="sidebar-toggle" onclick="toggleSidebar()">
+                <button id="sidebar-toggle" class="sidebar-toggle">
                     <span class="toggle-icon"></span>
                 </button>
                 <h2>Admin Panel</h2>
@@ -218,40 +218,40 @@
         <div id="admin-sidebar" class="admin-sidebar">
             <nav class="sidebar-nav">
                 <div class="nav-items">
-                    <button onclick="showDashboard()" class="nav-item">
+                    <button id="nav-dashboard" class="nav-item">
                         <span class="nav-icon">📊</span>
                         Dashboard
                     </button>
-                    <button onclick="showAddCustomer()" class="nav-item">
+                    <button id="nav-add-customer" class="nav-item">
                         <span class="nav-icon">👤</span>
                         Add Customer
                     </button>
-                    <button onclick="showTakeOrder()" class="nav-item">
+                    <button id="nav-take-order" class="nav-item">
                         <span class="nav-icon">📝</span>
                         Take Order
                     </button>
-                    <button onclick="showManageCustomers()" class="nav-item">
+                    <button id="nav-manage-customers" class="nav-item">
                         <span class="nav-icon">👥</span>
                         Manage Customers
                     </button>
-                    <button onclick="showManageOrders()" class="nav-item">
+                    <button id="nav-show-orders" class="nav-item">
                         <span class="nav-icon">📋</span>
                         Show Orders
                     </button>
-                    <button onclick="showPayments()" class="nav-item">
+                    <button id="nav-payments" class="nav-item">
                         <span class="nav-icon">💰</span>
                         Payments
                     </button>
-                    <button onclick="showInsights()" class="nav-item">
+                    <button id="nav-insights" class="nav-item">
                         <span class="nav-icon">📊</span>
                         Insights
                     </button>
-                    <button onclick="showCustomerPayments()" class="nav-item">
+                    <button id="nav-customer-payments" class="nav-item">
                         <span class="nav-icon">💳</span>
                         Customer Payments
                     </button>
                 </div>
-                <button onclick="logoutAdmin()" class="sidebar-logout">
+                <button id="logout-button"   class="sidebar-logout">
                     <span class="nav-icon">⬅️</span>
                     Logout
                 </button>
@@ -754,7 +754,7 @@
         </div>
     </div>
     <script src="env.js"></script>
-    <script src="app.js"></script>
+    <script type="module" src="main.js"></script>
 </body>
 
 </html>

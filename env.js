@@ -1,3 +1,3 @@
 window.env={
-    BACKEND_URL: "https://laundry-system-cwg6.onrender.com"
+    BACKEND_URL: "http://localhost:8080"
 };
