@@ -1097,7 +1097,7 @@ button {
     margin-top: 20px;
 }
 
-.primary-button {
+.primary-button  {
     display: flex;
     align-items: center;
     gap: 6px;

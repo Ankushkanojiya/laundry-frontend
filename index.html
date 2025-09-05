@@ -17,8 +17,8 @@
 
             <!-- Toggle Tabs -->
             <div class="tab-toggle">
-                <button onclick="showTab('admin')" id="tab-admin" class="active-tab">Admin</button>
-                <button onclick="showTab('customer')" id="tab-customer">Customer</button>
+                <button  id="tab-admin" class="active-tab">Admin</button>
+                <button  id="tab-customer">Customer</button>
             </div>
 
             <!-- Admin Login Form -->
@@ -31,7 +31,7 @@
                     <input type="password" id="password" placeholder="Password">
                 </div>
                 <button id="login-button">Login</button>
-                <p id="login-message"></p>
+                <p id="login-message" class="message"></p>
             </div>
 
             <!-- Customer registration and login form -->
@@ -44,10 +44,9 @@
                     <div class="form-group">
                         <input type="password" id="customer-password-login" placeholder="Password">
                     </div>
-                    <button onclick="loginCustomer()">Login</button>
+                    <button id="login-customer-btn">Login</button>
                     <p class="switch-auth">
-                        New Customer? <button onclick="toggleAuthMode('register')" class="text-btn">Register
-                            here</button>
+                        New Customer? <a href="#" id="show-register-form-link">Register here</a>
                     </p>
                 </div>
 
@@ -59,13 +58,12 @@
                     <div class="form-group">
                         <input type="password" id="customer-password-register" placeholder="Password">
                     </div>
-                    <button onclick="registerCustomer()">Register</button>
+                    <button id="register-customer-btn">Register</button>
                     <p class="switch-auth">
-                        Already have an account? <button onclick="toggleAuthMode('login')" class="text-btn">Login
-                            here</button>
+                        Already have an account?<a href="#" id="show-login-form-link">Login Here</a>
                     </p>
                 </div>
-                <p id="customer-auth-message"></p>
+                <p id="customer-auth-message" class="message"></p>
             </div>
         </div>
     </div>
@@ -143,7 +141,7 @@
                 <button onclick="showCustomerProfile()">
                     <span class="icon">👤</span> My Profile
                 </button>
-                <button onclick="logoutCustomer()" class="logout-btn">
+                <button id="logout-customer-btn" class="logout-btn">
                     <span class="icon">🚪</span> Logout
                 </button>
             </div>
@@ -154,7 +152,7 @@
                 <span class="icon">💰</span>
                 Balance Due: ₹<span id="customer-balance">0</span>
             </h2>
-            <button onclick="showCustomerPaymentModal()" id="pay-now-btn">
+            <button id="show-customer-payment-modal" class="pay-now-btn">
                 <span class="icon">💳</span> Pay Now
             </button>
         </div>
@@ -339,10 +337,10 @@
                                 </div>
 
                                 <div class="filter-actions">
-                                    <button onclick="applyFilters()" class="apply-btn">
+                                    <button id="apply-filters-button" class="apply-btn">
                                         <span class="button-icon">🔍</span> Apply
                                     </button>
-                                    <button onclick="clearFilters()" class="clear-btn">
+                                    <button id="clear-filters-button" class="clear-btn">
                                         <span class="button-icon">↺</span> Clear
                                     </button>
                                 </div>
@@ -361,7 +359,7 @@
                                             <th>Actions</th>
                                         </tr>
                                     </thead>
-                                    <tbody></tbody>
+                                    <tbody id="orders-table-body"></tbody>
                                 </table>
                             </div>
                         </div>
@@ -396,10 +394,10 @@
 
                             </div>
                             <div class="form-actions">
-                                <button id="add-btn" class="primary-button" onclick="addCustomer()">
+                                <button id="add-customer-btn" class="primary-button" >
                                     Add Customer
                                 </button>
-                                <button class="secondary-button" onclick="resetForm()">
+                                <button id="reset-btn" class="secondary-button" >
                                     Clear Form
                                 </button>
                             </div>
@@ -455,10 +453,10 @@
                             </div>
 
                             <div class="form-actions">
-                                <button class="primary-button" onclick="submitOrder()">
+                                <button id="submit-order-button" class="primary-button">
                                     Create Order
                                 </button>
-                                <button class="secondary-button" onclick="resetOrderForm()">
+                                <button id="reset-order-button" class="secondary-button">
                                     Clear Form
                                 </button>
                             </div>
@@ -543,7 +541,7 @@
                                             <th>Actions</th>
                                         </tr>
                                     </thead>
-                                    <tbody></tbody>
+                                    <tbody id="customer-payments-table-body"></tbody>
                                 </table>
                             </div>
                         </div>
@@ -600,7 +598,7 @@
             <!-- Edit Customer Modal -->
             <div id="edit-customer-modal" class="modal hidden">
                 <div class="modal-content">
-                    <span class="close" onclick="closeEditCustomerModal()">&times;</span>
+                    <span class="close" id="span-close-edit-customer-modal">&times;</span>
                     <h3>Edit Customer Details</h3>
                     <div id="edit-customer-form">
                         <div class="input-group">
@@ -619,13 +617,13 @@
                         </div>
                         <div class="modal-actions">
                             <div class="main-actions">
-                                <button onclick="updateCustomer()" class="primary-button">Save Changes</button>
-                                <button onclick="closeEditCustomerModal()" class="secondary-button">Cancel</button>
+                                <button id="update-customer-btn" class="primary-button">Save Changes</button>
+                                <button id="close-edit-customer-modal" class="secondary-button">Cancel</button>
                             </div>
                             <div class="danger-zone">
                                 <hr class="divider">
                                 <p class="danger-text">Danger Zone</p>
-                                <button onclick="deleteCustomer(currentCustomerId)" class="danger-button">
+                                <button id="delete-customer-btn" class="danger-button">
                                     🗑️ Delete Customer
                                 </button>
                             </div>
@@ -650,7 +648,7 @@
             <p><strong>Order Date:</strong> <span id="popup-order-date"></span></p>
             <p><strong>Status:</strong> <span id="popup-status">PENDING</span></p>
             <div style="margin-top: 15px;">
-                <button onclick="closeOrderPopup()">Close</button>
+                <button id="close-popup-button">Close</button>
       
             </div>
         </div>
@@ -659,7 +657,7 @@
     <!-- Customer Order History -->
     <div id="customer-order-history" class="hidden">
         <div class="modal-content">
-            <span class="close" onclick="closeHistory()">&times;</span>
+            <span class="close" id="span-close-order-history">&times;</span>
             <h3>Order History - <span id="customer-order-history-name"></span></h3>
             <div class="history-table-container">
                 <table id="customer-orders-table">
@@ -672,7 +670,7 @@
                             <th>Action</th>
                         </tr>
                     </thead>
-                    <tbody></tbody>
+                    <tbody id="customer-orders-table-body"></tbody>
                 </table>
             </div>
         </div>
@@ -680,7 +678,7 @@
     <!--  Payment Modal  -->
     <div id="payment-modal" class="modal hidden">
         <div class="modal-content">
-            <span class="close" onclick="closePaymentModal()">&times;</span>
+            <span class="close" id="span-close-payment-modal">&times;</span>
             <h3>Record Payment</h3>
 
             <!-- Message container INSIDE modal-content -->
@@ -702,8 +700,8 @@
             </div>
 
             <div class="modal-actions">
-                <button onclick="processPayment()">Confirm Payment</button>
-                <button onclick="closePaymentModal()">Cancel</button>
+                <button id="process-payment-btn">Confirm Payment</button>
+                <button id="close-payment-modal">Cancel</button>
             </div>
         </div>
     </div>
@@ -711,7 +709,7 @@
     <!-- Payment Transaction History -->
     <div id="payment-transaction-history" class="hidden">
         <div class="modal-content">
-            <span class="close" onclick="closeTransactionModal()">&times;</span>
+            <span class="close" id="close-transaction-modal">&times;</span>
             <h3>Payment History - <span id="transaction-customer-name"></span></h3>
             <div class="transaction-table-container">
                 <table id="transaction-table">
@@ -733,7 +731,7 @@
         <div class="modal-content invoice-content">
             <div class="modal-header">
                 <h3>Payment Receipt</h3>
-                <span class="close" onclick="closeInvoiceModal()">&times;</span>
+                <span class="close" id="close-invoice-modal">&times;</span>
             </div>
             <div class="modal-body">
                 <div class="business-info">

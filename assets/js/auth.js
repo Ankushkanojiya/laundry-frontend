@@ -61,13 +61,7 @@ export function getAdminAuthHeaders(){
     }
 }
 
-export function getCustomerAuthHeaders(){
-    const customerToken=localStorage.getItem("customerToken");
-    return{
-        "Authorization": `Bearer ${customerToken}`,
-        "Content-Type" : "application/json"
-    }
-}
+
 
 export function getHeaders(){
     const getToken=localStorage.getItem("adminToken")||localStorage.getItem("customerToken");

@@ -1,5 +1,9 @@
 import { loadStats, loadDashboardPendingOrders } from './adminDashboard.js';
-
+import {refreshCustomers} from './customers.js';
+import { loadCustomersForOrders , populateCustomerFilter,refreshOrders} from './orders.js';
+import { refreshPayments } from './payments.js';
+import { customerPayments } from './customerPayments.js';
+import { loadInsights } from './insights.js';
 
 export function showMessage(message, type = 'info', elementId = 'action-message') {
     const element = document.getElementById(elementId);
@@ -168,7 +172,7 @@ export function showDashboard() {
 
 export function showTakeOrder() {
     showSection('take-order-section', 'Take Order');
-    loadCustomersForOrder();
+    loadCustomersForOrders();
 }
 
 export function showAddCustomer() {
@@ -199,4 +203,40 @@ export function showCustomerPayments() {
 export function showInsights() {
     showSection('insights-section', 'Insights');
     loadInsights();
+}
+
+// This function handles switching between the Admin and Customer forms.
+export function showAuthTab(type) {
+    const adminForm = document.getElementById('admin-form');
+    const customerForm = document.getElementById('customer-form');
+    const adminTab = document.getElementById('tab-admin');
+    const customerTab = document.getElementById('tab-customer');
+
+    if (type === 'admin') {
+        adminForm.classList.remove('hidden');
+        customerForm.classList.add('hidden');
+        adminTab.classList.add('active-tab');
+        customerTab.classList.remove('active-tab');
+    } else {
+        customerForm.classList.remove('hidden');
+        adminForm.classList.add('hidden');
+        customerTab.classList.add('active-tab');
+        adminTab.classList.remove('active-tab');
+        toggleAuthMode('login'); // Default to login view
+    }
+}
+
+// This function handles toggling between Login and Register inside the Customer form.
+export function toggleAuthMode(mode) {
+    const loginSection = document.getElementById('customer-login-section');
+    const registerSection = document.getElementById('customer-register-section');
+
+    if (mode === 'login') {
+        loginSection.classList.remove('hidden');
+        registerSection.classList.add('hidden');
+    } else {
+        loginSection.classList.add('hidden');
+        registerSection.classList.remove('hidden');
+    }
+    showMessage('', 'clear', 'customer-auth-message');
 }

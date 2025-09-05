@@ -1,6 +1,26 @@
 import { BASE_URL } from "./config.js";
 import { getAdminAuthHeaders } from "./auth.js";
 
+
+
+export function initDashboard() {
+    const tableBody = document.getElementById('dashboard-pending-orders-body');
+    if (!tableBody) return;
+
+    tableBody.addEventListener('click', (event) => {
+        const button = event.target.closest('button');
+        if (!button) return;
+
+        
+        if (button.dataset.action === 'update-status-dashboard') {
+            const orderId = button.dataset.id;
+            const newStatus = button.dataset.status;
+            
+            updateOrderStatus(orderId, newStatus, false);
+        }
+    });
+}
+
 export async function loadStats() {
     console.log("loading admin dashboard stats");
     try {
@@ -24,7 +44,7 @@ export async function loadDashboardPendingOrders(){
     try {
         const today=new Date();
         const yesterday= new Date(today);
-        yesterday.setDate(today.getDate-1);
+        yesterday.setDate(today.getDate()-1);
 
         const dayBeforeYesterday = new Date(today);
         dayBeforeYesterday.setDate(today.getDate() - 2);
@@ -50,7 +70,7 @@ export async function loadDashboardPendingOrders(){
     }
 }
 
-function renderDashboardPendingOrders(orders){
+export async function renderDashboardPendingOrders(orders){
     
     const tbody = document.querySelector('#dashboard-pending-orders tbody');
     if (!tbody) return;
@@ -69,7 +89,12 @@ function renderDashboardPendingOrders(orders){
             <td>${order.totalClothes}</td>
             <td>₹${order.totalAmount}</td>
             <td>
-                <button class="status-btn pending small" onClick="updateOrderStatus(${order.id},'IN_PROGRESS',false)">Start Order</button>
+                <button class="status-btn pending small" 
+                            data-action="update-status-dashboard" 
+                            data-id="${order.id}" 
+                            data-status="IN_PROGRESS">
+                        Start Order
+                    </button>
             </td>
         </tr>`
     });
@@ -77,4 +102,5 @@ function renderDashboardPendingOrders(orders){
 
 export function initializeDashboard(){
     loadStats();
+    loadDashboardPendingOrders();
 }
