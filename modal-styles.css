@@ -44,6 +44,110 @@
     color: #2E7D32;
 }
 
+/* Custom Dialog Styles */
+.custom-dialog {
+    max-width: 400px;
+    padding: 0;
+    overflow: hidden;
+}
+
+.dialog-header {
+    background: #f8f9fa;
+    padding: 20px 24px;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.dialog-header h3 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: #495057;
+}
+
+.dialog-body {
+    padding: 24px;
+}
+
+.dialog-body p {
+    margin: 0;
+    font-size: 16px;
+    line-height: 1.5;
+    color: #6c757d;
+}
+
+.dialog-actions {
+    padding: 16px 24px;
+    background: #f8f9fa;
+    border-top: 1px solid #e9ecef;
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+}
+
+.dialog-actions button {
+    min-width: 80px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.dialog-actions .primary-button {
+    background: #007bff;
+    color: white;
+}
+
+.dialog-actions .primary-button:hover {
+    background: #0056b3;
+}
+
+.dialog-actions .secondary-button {
+    background: #6c757d;
+    color: white;
+}
+
+.dialog-actions .secondary-button:hover {
+    background: #545b62;
+}
+
+.dialog-actions .danger-button {
+    background: #dc3545;
+    color: white;
+}
+
+.dialog-actions .danger-button:hover {
+    background: #c82333;
+}
+
+/* Mobile responsive styles for custom dialogs */
+@media (max-width: 768px) {
+    .custom-dialog {
+        max-width: 90vw;
+        margin: 0 16px;
+    }
+    
+    .dialog-actions {
+        flex-direction: column-reverse;
+        gap: 8px;
+    }
+    
+    .dialog-actions button {
+        width: 100%;
+        min-width: auto;
+    }
+    
+    .dialog-header h3 {
+        font-size: 16px;
+    }
+    
+    .dialog-body p {
+        font-size: 14px;
+    }
+}
+
 .close {
     position: absolute;
     top: 20px;

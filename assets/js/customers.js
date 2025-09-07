@@ -1,14 +1,15 @@
 import { BASE_URL } from './config.js';
-import {showMessage,highlightDuplicatePhone} from './ui.js';
+import { showMessage, highlightDuplicatePhone } from './ui.js';
 import { getAdminAuthHeaders } from './auth.js';
 import { viewOrders } from './orders.js';
 import { viewTransactions } from './payments.js';
+import { showConfirmDialog } from './dialogs.js';
 
 
 let currentCustomerId = null;
 
 export function initCustomers() {
-    
+
     const tableBody = document.getElementById('customers-table-body');
     tableBody?.addEventListener('click', (event) => {
         const button = event.target.closest('button');
@@ -21,7 +22,7 @@ export function initCustomers() {
                 editCustomer(id);
                 break;
             case 'view-orders':
-                viewOrders(id, name); 
+                viewOrders(id, name);
                 break;
             case 'view-transactions':
                 viewTransactions(id, name);
@@ -69,7 +70,7 @@ export async function refreshCustomers() {
                         <button class="view-orders-btn" data-action="view-orders" data-id="${customer.id}" data-name="${customer.name}" title="View Orders">
                             Orders
                         </button>
-                        <button class="view-orders-btn" data-action="view-transactions" data-id="${customer.id}" data-name="${customer.name}" title="View Transactions">
+                        <button class="view-invoice-btn" data-action="view-transactions" data-id="${customer.id}" data-name="${customer.name}" title="View Transactions">
                             Transactions
                         </button>
                         <button class="edit-btn" data-action="edit" data-id="${customer.id}" title="Edit Customer">
@@ -85,31 +86,34 @@ export async function refreshCustomers() {
 }
 
 
-export async function addCustomer(){
-    const name=document.getElementById('customer-name').value.trim();
-    const phone=document.getElementById('customer-phone').value.trim();
+export async function addCustomer() {
+    const name = document.getElementById('customer-name').value.trim();
+    const phone = document.getElementById('customer-phone').value.trim();
 
-    if(!name || !phone){
+    if (!name || !phone) {
         showMessage('Please fill all fields', 'error');
         return;
     }
-    if(!/[A-Za-z]/.test(name)){
-        showMessage('Name must contain letters','error');
+    if (!/[A-Za-z]/.test(name)) {
+        showMessage('Name must contain letters', 'error');
         return;
     }
-    if(!/^\d{10}$/.test(phone)){
-        showMessage('Phone must be 10 digits','error');
+    if (!/^\d{10}$/.test(phone)) {
+        showMessage('Phone must be 10 digits', 'error');
         return;
     }
 
     try {
-        const response=await fetch(`${BASE_URL}/api/customers`,{
+        const response = await fetch(`${BASE_URL}/api/customers`, {
             method: 'POST',
             headers: getAdminAuthHeaders(),
-            body: JSON.stringify({name,phoneNumber:phone})
+            body: JSON.stringify({ name, phoneNumber: phone })
         });
+        console.log("Status:", response.status);
 
-        const responseData = await response.text()
+        const responseData = await response.text();
+        console.log("Response body:", responseData);
+        
 
         if (!response.ok) {
             if (response.status === 400 && responseData.includes("already exists")) {
@@ -120,10 +124,11 @@ export async function addCustomer(){
             }
             throw new Error(responseData || 'Failed to add customer');
         }
-
+        
         showMessage('Customer added successfully', 'success');
         resetForm();
         await refreshCustomers();
+        
     } catch (error) {
         if (error.message.includes("already exists")) {
             showMessage('Phone number already registered!', 'error');
@@ -131,7 +136,7 @@ export async function addCustomer(){
         } else {
             showMessage(error.message, 'error');
         }
-        
+
     }
 
 }
@@ -190,7 +195,17 @@ export async function updateCustomer() {
 }
 
 export async function deleteCustomer(id) {
-    if (!confirm('Are you sure you want to delete this customer? This action cannot be undone.')) return;
+    const confirmed = await showConfirmDialog(
+        'Are you sure you want to delete this customer? This action cannot be undone.',
+        {
+            title: 'Delete Customer',
+            confirmText: 'Delete',
+            cancelText: 'Cancel',
+            confirmClass: 'danger-button'
+        }
+    );
+
+    if (!confirmed) return;
 
     try {
         const response = await fetch(`${BASE_URL}/api/customers/${id}`, {
@@ -225,6 +240,6 @@ export function closeEditCustomerModal() {
 export function resetForm() {
     document.getElementById('customer-name').value = '';
     document.getElementById('customer-phone').value = '';
-    showMessage('', 'clear');
-    
+    setTimeout(() => showMessage('', 'clear'), 3000);
+
 }

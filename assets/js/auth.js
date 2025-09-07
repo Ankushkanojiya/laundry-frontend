@@ -1,6 +1,6 @@
 import { BASE_URL } from './config.js';
 import {showMessage} from './ui.js';
-import {initializeDashboard} from './adminDashboard.js';
+import {initAdminDashboard} from './adminDashboard.js';
 import {showDashboard} from './ui.js'
 
 export async function login() {
@@ -33,7 +33,7 @@ export async function login() {
         adminDashboard.classList.remove("hidden");
         adminDashboard.style.display="block";
 
-        initializeDashboard();
+        initAdminDashboard();
         showDashboard();
     } catch (error) {
         showMessage(error.message, 'error', 'login-message');
@@ -69,5 +69,26 @@ export function getHeaders(){
     return{
         "Authorization" : `Bearer ${getToken}`,
         "Content-Type" : "application/json"
+    }
+}
+
+export async function validateAdminToken() {
+    const token = localStorage.getItem("adminToken");
+    
+    if (!token) {
+        return false;
+    }
+    
+    try {
+        const response = await fetch(`${BASE_URL}/api/stats`, {
+            method: "GET",
+            headers: getAdminAuthHeaders()
+        });
+        
+        // If the request is successful, the token is valid
+        return response.ok;
+    } catch (error) {
+        console.error("Admin token validation error:", error);
+        return false;
     }
 }

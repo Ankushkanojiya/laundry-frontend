@@ -1,10 +1,14 @@
 import { BASE_URL } from "./config.js";
 import { getAdminAuthHeaders } from "./auth.js";
+import { updateOrderStatus } from "./orders.js";
 
 
 
-export function initDashboard() {
-    const tableBody = document.getElementById('dashboard-pending-orders-body');
+export function initAdminDashboard() {
+
+    loadStats();
+    loadDashboardPendingOrders();
+    const tableBody = document.querySelector('#dashboard-pending-orders tbody');
     if (!tableBody) return;
 
     tableBody.addEventListener('click', (event) => {
@@ -82,8 +86,8 @@ export async function renderDashboardPendingOrders(orders){
         return;
     }
     orders.forEach(order => {
-        window.updateOrderStatus = updateOrderStatus;
-        tbody.innerHTML= `<tr>
+        // window.updateOrderStatus = updateOrderStatus;
+        tbody.innerHTML += `<tr>
             <td>#${order.id}</td>
             <td>${order.customerName}</td>
             <td>${order.totalClothes}</td>
@@ -100,7 +104,3 @@ export async function renderDashboardPendingOrders(orders){
     });
 }
 
-export function initializeDashboard(){
-    loadStats();
-    loadDashboardPendingOrders();
-}

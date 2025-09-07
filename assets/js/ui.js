@@ -240,3 +240,58 @@ export function toggleAuthMode(mode) {
     }
     showMessage('', 'clear', 'customer-auth-message');
 }
+
+export function showCustomerProfileSidebar() {
+    const sidebar = document.getElementById("customer-profile-sidebar");
+    const overlay = document.getElementById("sidebar-overlay");
+    if (!sidebar || !overlay) return;
+
+    sidebar.classList.remove("hidden");
+    overlay.classList.remove("hidden");
+
+    requestAnimationFrame(() => sidebar.classList.add("active"));
+
+    document.getElementById("profile-customer-name").textContent = localStorage.getItem("customerName") || "N/A";
+    document.getElementById("profile-customer-phone").textContent = localStorage.getItem("customerPhone") || "N/A";
+
+    cancelPasswordChange(); // Reset form to default state
+}
+
+export function closeCustomerProfileSidebar() {
+    const sidebar = document.getElementById("customer-profile-sidebar");
+    const overlay = document.getElementById("sidebar-overlay");
+    if (!sidebar || !overlay) return;
+
+    sidebar.classList.remove("active");
+    overlay.classList.add("hidden");
+
+    setTimeout(() => sidebar.classList.add("hidden"), 300);
+}
+
+export function showPasswordChangeForm() {
+    document.getElementById("password-change-form")?.classList.remove("hidden");
+    document.getElementById("change-password-btn")?.classList.add("hidden");
+}
+
+export function cancelPasswordChange() {
+    const form = document.getElementById("password-change-form");
+    if (form) {
+        form.classList.add("hidden");
+         
+    }
+    document.getElementById("change-password-btn")?.classList.remove("hidden");
+    showMessage('', 'clear', "customer-profile-message");
+    const messageBox = document.getElementById("customer-profile-message");
+    if (messageBox) {
+        messageBox.textContent = "";
+        messageBox.className = "message"; 
+    }
+}
+
+export function showProfileMessage(message, type = "error") {
+    const messageBox = document.getElementById('customer-profile-message');
+    if (!messageBox) return;
+
+    messageBox.textContent = message;
+    messageBox.style.color = type === "success" ? "green" : "red";
+}

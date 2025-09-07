@@ -70,13 +70,13 @@
 
     <div id="customer-dashboard" class="hidden">
         <!-- Sidebar Overlay -->
-        <div id="sidebar-overlay" class="sidebar-overlay hidden" onclick="closeCustomerProfileSidebar()"></div>
+        <div id="sidebar-overlay" class="sidebar-overlay hidden"></div>
 
         <!-- Customer Profile Sidebar -->
         <div id="customer-profile-sidebar" class="profile-sidebar hidden">
             <div class="sidebar-header">
                 <h3>My Profile</h3>
-                <button onclick="closeCustomerProfileSidebar()" class="close-sidebar-btn">
+                <button id="close-customer-profile-sidebar" class="close-sidebar-btn">
                     <span class="icon">✕</span>
                 </button>
             </div>
@@ -104,12 +104,12 @@
                 <!-- Password Change Section -->
                 <div class="password-section">
                     <h4><span class="icon">🔐</span> Security</h4>
-                    <button onclick="showPasswordChangeForm()" id="change-password-btn" class="change-password-btn">
+                    <button  id="change-password-btn" class="change-password-btn">
                         <span class="icon">🔑</span> Change Password
                     </button>
 
                     <div id="password-change-form" class="password-form hidden">
-                        <div id="customer-profile-message" class="message"></div>
+                        <div id="customer-profile-message" class="message" style="color: red;"></div>
                         <div class="form-group">
                             <label for="old_password">Current Password</label>
                             <div class="input-wrapper">
@@ -125,8 +125,8 @@
                             </div>
                         </div>
                         <div class="form-actions">
-                            <button onclick="submitPasswordChange()" class="primary-btn">Update Password</button>
-                            <button onclick="cancelPasswordChange()" class="secondary-btn">Cancel</button>
+                            <button id="submit-password-change-btn" class="primary-btn">Update Password</button>
+                            <button id="close-password-change-btn" class="secondary-btn">Cancel</button>
                         </div>
                     </div>
                 </div>
@@ -138,7 +138,7 @@
                 <h2>👋 Welcome <span id="customer-name-display"></span>!</h2>
             </div>
             <div class="header-actions">
-                <button onclick="showCustomerProfile()">
+                <button id="view-profile-btn">
                     <span class="icon">👤</span> My Profile
                 </button>
                 <button id="logout-customer-btn" class="logout-btn">
@@ -751,6 +751,38 @@
             </div>
         </div>
     </div>
+
+    <!-- Custom Alert Modal -->
+    <div id="custom-alert-modal" class="modal hidden">
+        <div class="modal-content custom-dialog">
+            <div class="dialog-header">
+                <h3 id="alert-title">Alert</h3>
+            </div>
+            <div class="dialog-body">
+                <p id="alert-message"></p>
+            </div>
+            <div class="dialog-actions">
+                <button id="alert-ok-btn" class="primary-button">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom Confirm Modal -->
+    <div id="custom-confirm-modal" class="modal hidden">
+        <div class="modal-content custom-dialog">
+            <div class="dialog-header">
+                <h3 id="confirm-title">Confirm</h3>
+            </div>
+            <div class="dialog-body">
+                <p id="confirm-message"></p>
+            </div>
+            <div class="dialog-actions">
+                <button id="confirm-cancel-btn" class="secondary-button">Cancel</button>
+                <button id="confirm-ok-btn" class="primary-button">Confirm</button>
+            </div>
+        </div>
+    </div>
+
     <script src="env.js"></script>
     <script type="module" src="main.js"></script>
 </body>

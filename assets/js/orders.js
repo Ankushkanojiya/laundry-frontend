@@ -2,6 +2,7 @@ import { BASE_URL } from './config.js';
 import { getAdminAuthHeaders } from './auth.js';
 import { showMessage , highlightCustomerSelect, highlightClothCountInput } from './ui.js';
 import { loadStats } from './adminDashboard.js';
+import { showConfirmDialog } from './dialogs.js';
 
 
 let currentCustomerInModal = { id: null, name: null };
@@ -268,7 +269,18 @@ export async function refreshOrders() {
 
 export async function updateOrderStatus(orderId, newStatus, isInModal = false) {
     console.log(`🔄 Updating order ${orderId} to status ${newStatus}, isInModal: ${isInModal}`);
-    if (!confirm(`Change order status to ${newStatus}?`)) return;
+    
+    const confirmed = await showConfirmDialog(
+        `Are you sure you want to change this order status to ${newStatus}?`,
+        {
+            title: 'Confirm Status Change',
+            confirmText: 'Change Status',
+            cancelText: 'Cancel',
+            confirmClass: 'primary-button'
+        }
+    );
+    
+    if (!confirmed) return;
 
     try {
         const response = await fetch(`${BASE_URL}/api/orders/${orderId}/status?newStatus=${newStatus}`, {

@@ -1,10 +1,11 @@
 import { BASE_URL } from "./config.js";
-import { showMessage } from "./ui.js";
+import {showMessage , showProfileMessage}from "./ui.js";
 import { loadCustomerDashboard } from "./customerDashboard.js";
 
 export function initCustomerAuth() {
     document.getElementById('register-customer-btn')?.addEventListener('click', registerCustomer);
     document.getElementById('login-customer-btn')?.addEventListener('click', loginCustomer);
+    document.getElementById('submit-password-change-btn')?.addEventListener('click', submitPasswordChange);
 }
 
 export async function registerCustomer() {
@@ -82,6 +83,78 @@ export function getCustomerAuthHeaders(){
     }
 }
 
+export async function validateCustomerToken() {
+    const token = localStorage.getItem("customerToken");
+    const customerId = localStorage.getItem("customerId");
+    
+    if (!token || !customerId) {
+        return false;
+    }
+    
+    try {
+        const response = await fetch(`${BASE_URL}/api/payments/${customerId}/balance`, {
+            method: "GET",
+            headers: getCustomerAuthHeaders()
+        });
+        
+        // If the request is successful, the token is valid
+        return response.ok;
+    } catch (error) {
+        console.error("Token validation error:", error);
+        return false;
+    }
+}
+
+export async function submitPasswordChange() {
+    console.log("Password change initiated");
+    const old_password = document.getElementById('old_password').value.trim();
+    const new_password = document.getElementById("new_password").value.trim();
+
+    if (!old_password || !new_password) {
+        showProfileMessage("Please fill both fields", "error");
+        return;
+    }
+
+    if (new_password.length < 6) {
+        showProfileMessage("New password must be at least 6 characters long", "error");
+        return;
+    }
+
+    try {
+        console.log("inside backend");
+        const response = await fetch(`${BASE_URL}/api/customer-auth/me/changePassword`, {
+            method: 'PATCH',
+            headers: getCustomerAuthHeaders(),
+            body: JSON.stringify({ oldPassword: old_password, newPassword: new_password })
+        });
+
+        const msg = await response.text();
+        console.log(msg);
+        showProfileMessage(msg, response.ok ? "success" : "error");
+
+        if (response.ok) {
+            // Clear form and hide password change section
+            const oldPasswordField = document.getElementById("old_password");
+            const newPasswordField = document.getElementById("new_password");
+            const passwordForm = document.getElementById("password-change-form");
+            const changePasswordBtn = document.getElementById("change-password-btn");
+
+            if (oldPasswordField) oldPasswordField.value = "";
+            if (newPasswordField) newPasswordField.value = "";
+            if (passwordForm) passwordForm.classList.add("hidden");
+            if (changePasswordBtn) changePasswordBtn.classList.remove("hidden");
+
+            setTimeout(() => {
+                const messageElement = document.getElementById("customer-profile-message");
+                if (messageElement) {
+                    messageElement.textContent = "";
+                }
+            }, 3000);
+        }
+    } catch(RuntimeError) {
+        showProfileMessage("An error occurred. Please try again.", "error");
+    }
+}
 export function logoutCustomer() {
     localStorage.clear(); // Clears all admin and customer data
     window.location.reload();

@@ -6,6 +6,7 @@ import { loadStats } from './adminDashboard.js';
 import { formatDateTime } from './utils.js';
 import { getCustomerAuthHeaders } from './customerAuth.js';
 import {fetchCustomerBalance, fetchCustomerOrders, fetchCustomerPayments } from './customerDashboard.js';
+import { showConfirm, showAlert } from './dialogs.js';
 
 
 
@@ -194,8 +195,13 @@ async function processPayment() {
 
       launchUpiIntent(amount);
 
-      setTimeout(() => {
-        if (confirm("Did you complete the UPI payment?")) {
+      setTimeout(async () => {
+        const confirmed = await showConfirm(
+          "Did you complete the UPI payment?",
+          "Payment Confirmation"
+        );
+        
+        if (confirmed) {
           sendPendingPayment(amount);
         } else {
           showMessage("Payment not recorded. Please try again.", "error");
@@ -341,7 +347,7 @@ export function showInvoiceModal(payment) {
 
       } catch (error) {
         console.error("❌ Error downloading receipt:", error);
-        alert("Failed to download receipt. Please try again.");
+        await showAlert("Failed to download receipt. Please try again.", "Download Error");
       }
     }
   }
@@ -405,8 +411,8 @@ export async function showTransactionHistory(transactionData) {
             <td>
                <button 
                 class="view-invoice-btn" 
-                    data-transactionId="${tData.transactionId}" 
-                    data-customerName="${tData.customerName}" 
+                    data-transaction-id="${tData.transactionId}" 
+                    data-customer-name="${tData.customerName}" 
                     data-amount="${tData.amount}" 
                     data-timestamp="${tData.timestamp}"
                 >

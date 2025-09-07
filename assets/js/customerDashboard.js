@@ -102,8 +102,8 @@ export async function fetchCustomerPayments(customerId) {
                     <td>
                         <button 
                             class="view-invoice-btn" 
-                            data-transactionId="${txn.transactionId}" 
-                            data-customerName="${txn.customerName}" 
+                            data-transaction-id="${txn.transactionId}" 
+                            data-customer-name="${txn.customerName}" 
                             data-amount="${txn.amount}" 
                             data-timestamp="${txn.timestamp}"
                         >
@@ -135,31 +135,3 @@ export async function loadCustomerDashboard(customerId) {
     fetchCustomerPayments(customerId);
 }
 
-function showCustomerProfile(customerId){
-    const sidebar = document.getElementById("customer-profile-sidebar");
-    const overlay = document.getElementById("sidebar-overlay");
-
-    sidebar.classList.remove("hidden");
-    overlay.classList.remove("hidden");
-
-    sidebar.offsetHeight;
-
-    requestAnimationFrame(() => {
-        sidebar.classList.add("active");
-    });
-
-     const customerName = localStorage.getItem("customerName");
-    const customerPhone = localStorage.getItem("customerPhone");
-
-    // Display customer information with fallbacks
-    const nameElement = document.getElementById("profile-customer-name");
-    const phoneElement = document.getElementById("profile-customer-phone");
-
-    if (nameElement) {
-        nameElement.textContent = customerName || "Not available";
-    }
-    if (phoneElement) {
-        phoneElement.textContent = customerPhone || "Not available";
-    }
-
-}
