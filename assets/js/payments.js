@@ -5,7 +5,7 @@ import { viewOrders } from './orders.js';
 import { loadStats } from './adminDashboard.js';
 import { formatDateTime } from './utils.js';
 import { getCustomerAuthHeaders } from './customerAuth.js';
-import {fetchCustomerBalance, fetchCustomerOrders, fetchCustomerPayments } from './customerDashboard.js';
+// import { fetchCustomerBalance, fetchCustomerOrders, fetchCustomerPayments } from './customerDashboard.js';
 import { showConfirm, showAlert } from './dialogs.js';
 
 
@@ -17,34 +17,121 @@ let paymentBalance = 0;
 let currentCustomerBalance = 0;
 
 export function initPayments() {
-  document.querySelector('#payments-table tbody')?.addEventListener('click', (event) => {
-    const button = event.target.closest('button');
-    if (!button) return;
+  console.log('Initializing payments module...');
 
-    const { action, customerId, customerName, balance } = button.dataset;
-    switch (action) {
-      case 'view-orders': {
-        const customerId = button.dataset.id;
-        const customerName = button.dataset.name;
-        viewOrders(customerId, customerName);
-        break;
-      }
-      case 'pay': {
-        const customerId = button.dataset.id;
-        const customerName = button.dataset.name;
-        const balance = button.dataset.balance;
-        showPaymentModal(customerId, customerName, balance);
-        break;
-      }
-      
+  // Use event delegation for dynamically created buttons in tables
+  const paymentsTable = document.querySelector('#payments-table tbody');
+  if (paymentsTable) {
+    // Remove existing listeners to prevent duplicates
+    paymentsTable.removeEventListener('click', handlePaymentsTableClick);
+    paymentsTable.addEventListener('click', handlePaymentsTableClick);
+  } else {
+    console.warn('Payments table tbody not found');
+  }
+
+  const transactionTable = document.querySelector('#transaction-table tbody');
+  if (transactionTable) {
+    // Remove existing listeners to prevent duplicates
+    transactionTable.removeEventListener('click', handleTransactionTableClick);
+    transactionTable.addEventListener('click', handleTransactionTableClick);
+  } else {
+    console.warn('Transaction table tbody not found');
+  }
+
+
+
+  // Static button event listeners with error checking
+  const processPaymentBtn = document.getElementById('process-payment-btn');
+  if (processPaymentBtn) {
+    processPaymentBtn.removeEventListener('click', processPayment);
+    processPaymentBtn.addEventListener('click', processPayment);
+    console.log('Process payment button listener added');
+  } else {
+    console.warn('Process payment button not found');
+  }
+
+  const closePaymentModalBtn = document.getElementById('close-payment-modal');
+  if (closePaymentModalBtn) {
+    closePaymentModalBtn.removeEventListener('click', closePaymentModal);
+    closePaymentModalBtn.addEventListener('click', closePaymentModal);
+  } else {
+    console.warn('Close payment modal button not found');
+  }
+
+  const spanClosePaymentModalBtn = document.getElementById('span-close-payment-modal');
+  if (spanClosePaymentModalBtn) {
+    spanClosePaymentModalBtn.removeEventListener('click', closePaymentModal);
+    spanClosePaymentModalBtn.addEventListener('click', closePaymentModal);
+  } else {
+    console.warn('Span close payment modal button not found');
+  }
+
+  const closeInvoiceModalBtn = document.getElementById('close-invoice-modal');
+  if (closeInvoiceModalBtn) {
+    closeInvoiceModalBtn.removeEventListener('click', closeInvoiceModal);
+    closeInvoiceModalBtn.addEventListener('click', closeInvoiceModal);
+  } else {
+    console.warn('Close invoice modal button not found');
+  }
+
+  const closeTransactionModalBtn = document.getElementById('close-transaction-modal');
+  if (closeTransactionModalBtn) {
+    closeTransactionModalBtn.removeEventListener('click', closeTransactionModal);
+    closeTransactionModalBtn.addEventListener('click', closeTransactionModal);
+  } else {
+    console.warn('Close transaction modal button not found');
+  }
+
+  const showCustomerPaymentModalBtn = document.getElementById('show-customer-payment-modal');
+  if (showCustomerPaymentModalBtn) {
+    console.log('Found show-customer-payment-modal button:', showCustomerPaymentModalBtn);
+    showCustomerPaymentModalBtn.removeEventListener('click', showCustomerPaymentModal);
+    showCustomerPaymentModalBtn.addEventListener('click', (e) => {
+      console.log('Show customer payment modal button clicked!', e);
+      e.preventDefault();
+      e.stopPropagation();
+      showCustomerPaymentModal();
+    });
+    console.log('Show customer payment modal button listener added');
+  } else {
+    console.warn('Show customer payment modal button not found');
+  }
+
+  console.log('Payments module initialization complete');
+
+
+}
+
+// Separate event handler for payments table clicks
+function handlePaymentsTableClick(event) {
+  const button = event.target.closest('button');
+  if (!button) return;
+
+  console.log('Payments table button clicked:', button.dataset);
+  const { action, id, name, balance } = button.dataset;
+
+  switch (action) {
+    case 'view-orders': {
+      console.log('View orders clicked for customer:', id, name);
+      viewOrders(id, name);
+      break;
     }
+    case 'pay': {
+      console.log('Pay button clicked for customer:', id, name, 'balance:', balance);
+      showPaymentModal(id, name, balance);
+      break;
+    }
+    default:
+      console.warn('Unknown action:', action);
+  }
+}
 
-  });
-
-  document.querySelector('#transaction-table tbody')?.addEventListener('click', (event) => {
+// Separate event handler for transaction table clicks
+function handleTransactionTableClick(event) {
   const button = event.target.closest('.view-invoice-btn');
   if (!button) return;
 
+  console.log('Transaction table button clicked:', button.dataset);
   const payment = {
     transactionId: button.dataset.transactionId,
     customerName: button.dataset.customerName,
@@ -53,14 +140,6 @@ export function initPayments() {
   };
 
   showInvoiceModal(payment);
-});
-
-  document.getElementById('process-payment-btn')?.addEventListener('click', processPayment);
-  document.getElementById('close-payment-modal')?.addEventListener('click', closePaymentModal);
-  document.getElementById('span-close-payment-modal')?.addEventListener('click', closePaymentModal);
-  document.getElementById('close-invoice-modal')?.addEventListener('click', closeInvoiceModal);
-  document.getElementById('close-transaction-modal')?.addEventListener('click', closeTransactionModal);
-  document.getElementById('show-customer-payment-modal')?.addEventListener('click', showCustomerPaymentModal);
 }
 
 export async function refreshPayments() {
@@ -123,19 +202,35 @@ export async function renderPaymentSummary(data) {
 }
 
 function showPaymentModal(customerId, customerName, balance) {
+  console.log('showPaymentModal called with:', { customerId, customerName, balance });
   whoIsPaying = "admin";
   paymentCustomerId = customerId;
   paymentCustomerName = customerName;
   paymentBalance = parseFloat(balance);
 
-  document.getElementById('payment-customer-name').textContent = customerName;
-  document.getElementById('payment-total-due').textContent = `₹${paymentBalance.toFixed(2)}`;
-  document.getElementById('payment-amount').value = '';
+  const paymentCustomerNameEl = document.getElementById('payment-customer-name');
+  const paymentTotalDueEl = document.getElementById('payment-total-due');
+  const paymentAmountEl = document.getElementById('payment-amount');
+  const modal = document.getElementById('payment-modal');
+
+  if (!paymentCustomerNameEl || !paymentTotalDueEl || !paymentAmountEl || !modal) {
+    console.error('Payment modal elements not found:', {
+      paymentCustomerNameEl: !!paymentCustomerNameEl,
+      paymentTotalDueEl: !!paymentTotalDueEl,
+      paymentAmountEl: !!paymentAmountEl,
+      modal: !!modal
+    });
+    return;
+  }
+
+  paymentCustomerNameEl.textContent = customerName;
+  paymentTotalDueEl.textContent = `₹${paymentBalance.toFixed(2)}`;
+  paymentAmountEl.value = '';
   showMessage('', 'clear', 'payment-message');
 
-  const modal = document.getElementById('payment-modal');
   modal.classList.remove('hidden');
   modal.classList.add('modal--active');
+  console.log('Payment modal shown successfully');
 }
 
 
@@ -200,7 +295,7 @@ async function processPayment() {
           "Did you complete the UPI payment?",
           "Payment Confirmation"
         );
-        
+
         if (confirmed) {
           sendPendingPayment(amount);
         } else {
@@ -251,9 +346,10 @@ async function sendPendingPayment(amount) {
 
     console.log("🧾 Saved pending payment:", savedPayment);
 
-    fetchCustomerBalance(localStorage.getItem("customerId"));
-    fetchCustomerOrders(localStorage.getItem("customerId"));
-    fetchCustomerPayments(localStorage.getItem("customerId"));
+    // fetchCustomerBalance(localStorage.getItem("customerId"));
+    // fetchCustomerOrders(localStorage.getItem("customerId"));
+    // fetchCustomerPayments(localStorage.getItem("customerId"));
+     document.dispatchEvent(new CustomEvent('customerPaymentSuccess'));
 
     closePaymentModal();
   } catch (err) {
@@ -262,9 +358,22 @@ async function sendPendingPayment(amount) {
   }
 }
 export async function showCustomerPaymentModal() {
+  console.log("Showing customer payment modal");
   whoIsPaying = "customer";
   paymentCustomerId = localStorage.getItem("customerId");
   paymentCustomerName = localStorage.getItem("customerName");
+
+  console.log("Customer payment details:", {
+    paymentCustomerId,
+    paymentCustomerName
+  });
+
+  // Check if customer is logged in
+  if (!paymentCustomerId || !paymentCustomerName) {
+    console.error("Customer not logged in properly");
+    showMessage("Please log in to make payments", "error");
+    return;
+  }
 
   // Fetch the current balance
   try {
@@ -277,14 +386,37 @@ export async function showCustomerPaymentModal() {
     const balance = parseFloat(await response.text());
     paymentBalance = balance;
 
-    document.getElementById("payment-customer-name").textContent = paymentCustomerName;
-    document.getElementById("payment-total-due").textContent = `₹${balance.toFixed(2)}`;
-    document.getElementById("payment-amount").value = "";
+    console.log("Customer balance fetched:", balance);
+
+    // Verify all modal elements exist
+    const paymentCustomerNameEl = document.getElementById("payment-customer-name");
+    const paymentTotalDueEl = document.getElementById("payment-total-due");
+    const paymentAmountEl = document.getElementById("payment-amount");
+    const modal = document.getElementById("payment-modal");
+
+    if (!paymentCustomerNameEl || !paymentTotalDueEl || !paymentAmountEl || !modal) {
+      console.error('Customer payment modal elements not found:', {
+        paymentCustomerNameEl: !!paymentCustomerNameEl,
+        paymentTotalDueEl: !!paymentTotalDueEl,
+        paymentAmountEl: !!paymentAmountEl,
+        modal: !!modal
+      });
+      showMessage("Payment modal not available", "error");
+      return;
+    }
+
+    paymentCustomerNameEl.textContent = paymentCustomerName;
+    paymentTotalDueEl.textContent = `₹${balance.toFixed(2)}`;
+    paymentAmountEl.value = "";
+
+    // Clear any previous messages
+    showMessage('', 'clear', 'payment-message');
 
     // Show modal with proper classes for animation and visibility
-    const modal = document.getElementById("payment-modal");
     modal.classList.remove("hidden");
     modal.classList.add("modal--active");
+    attachPaymentModalListeners();
+    console.log("Customer payment modal shown successfully");
   } catch (error) {
     console.error("Error fetching balance:", error);
     showMessage("Failed to load payment details", "error");
@@ -356,7 +488,7 @@ export function showInvoiceModal(payment) {
   modal.classList.remove("hidden");
   modal.classList.add("modal--active");
 }
-function closeInvoiceModal() {
+export function closeInvoiceModal() {
   const modal = document.getElementById("invoice-modal");
   if (modal) {
     modal.classList.add("hidden");
@@ -424,13 +556,13 @@ export async function showTransactionHistory(transactionData) {
     `;
   }).join('');
 
-
+  
 }
 
 function closePaymentModal() {
-    const modal = document.getElementById('payment-modal');
-    modal.classList.add('hidden');
-    modal.classList.remove('modal--active');
+  const modal = document.getElementById('payment-modal');
+  modal.classList.add('hidden');
+  modal.classList.remove('modal--active');
 }
 
 function closeTransactionModal() {
@@ -440,3 +572,18 @@ function closeTransactionModal() {
 }
 
 
+
+
+function attachPaymentModalListeners() {
+  const processPaymentBtn = document.getElementById('process-payment-btn');
+  if (processPaymentBtn) {
+    processPaymentBtn.removeEventListener('click', processPayment);
+    processPaymentBtn.addEventListener('click', processPayment);
+  }
+
+  const closePaymentModalBtn = document.getElementById('close-payment-modal');
+  if (closePaymentModalBtn) {
+    closePaymentModalBtn.removeEventListener('click', closePaymentModal);
+    closePaymentModalBtn.addEventListener('click', closePaymentModal);
+  }
+}

@@ -6,6 +6,8 @@ export function initCustomerAuth() {
     document.getElementById('register-customer-btn')?.addEventListener('click', registerCustomer);
     document.getElementById('login-customer-btn')?.addEventListener('click', loginCustomer);
     document.getElementById('submit-password-change-btn')?.addEventListener('click', submitPasswordChange);
+    document.getElementById('logout-customer-btn')?.addEventListener('click', logoutCustomer);
+    
 }
 
 export async function registerCustomer() {
@@ -35,11 +37,17 @@ export async function registerCustomer() {
 
         const message=await response.text();
         showMessage(message, "success", "customer-auth-message");
+        return true;
     }catch(error){
         showMessage("An error occurred. Please try again.", "error", "customer-auth-message");
         console.error("Registration error:", error);
     }
 
+}
+
+export function isCustomerLoggedIn(){
+    const customerToken=localStorage.getItem("customerToken");
+    return !!customerToken;
 }
 
 export async function loginCustomer(){
@@ -66,12 +74,14 @@ export async function loginCustomer(){
         localStorage.setItem('customerName',result.customerName);
         localStorage.setItem('customerPhone',phone);
 
-        document.getElementById("auth-section").classList.add("hidden");
-        document.getElementById("customer-dashboard").classList.remove("hidden");
+        // document.getElementById("auth-section").classList.add("hidden");
+        // document.getElementById("customer-dashboard").classList.remove("hidden");
 
-        loadCustomerDashboard(result.customerId)
+        // loadCustomerDashboard(result.customerId)
+        return true;
     } catch (error) {
         showMessage("An error occurred. Please try again.", "error", "customer-auth-message");
+        return false;
     }
 }
 

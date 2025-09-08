@@ -119,6 +119,7 @@ export function showConfirmDialog(message, options = {}) {
     } = options;
     
     return new Promise((resolve) => {
+        console.log('showConfirmDialog called with:', message);
         closeCurrentDialog();
         
         const modal = document.getElementById('custom-confirm-modal');
@@ -126,6 +127,12 @@ export function showConfirmDialog(message, options = {}) {
         const messageElement = document.getElementById('confirm-message');
         const cancelButton = document.getElementById('confirm-cancel-btn');
         const confirmButton = document.getElementById('confirm-ok-btn');
+        
+        if (!modal || !titleElement || !messageElement || !cancelButton || !confirmButton) {
+            console.error('Dialog elements not found!');
+            resolve(false);
+            return;
+        }
         
         titleElement.textContent = title;
         messageElement.textContent = message;
@@ -143,20 +150,36 @@ export function showConfirmDialog(message, options = {}) {
         // Set button classes
         newConfirmButton.className = confirmClass;
         
+        let resolved = false;
+        
         // Add new event listeners
-        newCancelButton.addEventListener('click', () => {
-            closeDialog(modal);
-            resolve(false);
+        newCancelButton.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            if (!resolved) {
+                resolved = true;
+                console.log('Cancel button clicked');
+                closeDialog(modal);
+                resolve(false);
+            }
         });
         
-        newConfirmButton.addEventListener('click', () => {
-            closeDialog(modal);
-            resolve(true);
+        newConfirmButton.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            if (!resolved) {
+                resolved = true;
+                console.log('Confirm button clicked');
+                closeDialog(modal);
+                resolve(true);
+            }
         });
         
         // Close on ESC key (cancel)
         const handleKeyDown = (e) => {
-            if (e.key === 'Escape') {
+            if (e.key === 'Escape' && !resolved) {
+                resolved = true;
+                console.log('ESC key pressed');
                 closeDialog(modal);
                 document.removeEventListener('keydown', handleKeyDown);
                 resolve(false);
@@ -166,9 +189,14 @@ export function showConfirmDialog(message, options = {}) {
         
         showDialog(modal);
         currentDialog = modal;
+        console.log('Dialog shown, waiting for user interaction...');
         
         // Focus on confirm button for better UX
-        setTimeout(() => newConfirmButton.focus(), 100);
+        setTimeout(() => {
+            if (newConfirmButton && !resolved) {
+                newConfirmButton.focus();
+            }
+        }, 100);
     });
 }
 
@@ -189,9 +217,11 @@ function showDialog(modal) {
  * @param {HTMLElement} modal - The modal element to close
  */
 function closeDialog(modal) {
+    console.log('Closing dialog:', modal.id, 'Stack trace:', new Error().stack);
     modal.classList.remove('modal--active');
     setTimeout(() => {
         modal.classList.add('hidden');
+        console.log('Dialog hidden:', modal.id);
     }, 300); // Match the CSS transition duration
     
     if (currentDialog === modal) {
@@ -210,6 +240,8 @@ function closeCurrentDialog() {
 
 // Initialize dialog system
 export function initDialogs() {
+    console.log('Initializing dialog system...');
+    
     // Close dialogs when clicking on the modal background
     const modals = [
         document.getElementById('custom-alert-modal'),
@@ -218,11 +250,30 @@ export function initDialogs() {
     
     modals.forEach(modal => {
         if (modal) {
-            modal.addEventListener('click', (e) => {
-                if (e.target === modal) {
-                    closeDialog(modal);
-                }
-            });
+            // Remove any existing listeners first
+            modal.removeEventListener('click', handleModalBackdropClick);
+            
+            // Add backdrop click listener
+            modal.addEventListener('click', handleModalBackdropClick);
+            
+            // Prevent clicks on modal content from bubbling up
+            const modalContent = modal.querySelector('.modal-content');
+            if (modalContent) {
+                modalContent.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                });
+            }
         }
     });
+    
+    console.log('Dialog system initialized');
+}
+
+// Separate function to handle modal backdrop clicks
+function handleModalBackdropClick(e) {
+    // Only close if clicking directly on the modal backdrop, not on child elements
+    if (e.target === e.currentTarget) {
+        console.log('Modal backdrop clicked, closing dialog');
+        closeDialog(e.target);
+    }
 }

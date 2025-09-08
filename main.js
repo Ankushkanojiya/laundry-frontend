@@ -6,7 +6,7 @@ import * as customers from './assets/js/customers.js';
 import { initOrders, closeHistoryModal } from './assets/js/orders.js';
 import { initPayments } from './assets/js/payments.js';
 import * as customerAuth from './assets/js/customerAuth.js';
-import { initCustomerDashboard } from './assets/js/customerDashboard.js';
+import { initCustomerDashboard,loadCustomerDashboard } from './assets/js/customerDashboard.js';
 import { initCustomerPayments } from './assets/js/customerPayments.js';
 import { initDialogs } from './assets/js/dialogs.js';
 document.addEventListener('DOMContentLoaded', async () => {
@@ -29,12 +29,13 @@ document.addEventListener('DOMContentLoaded', async () => {
         
         if (isValidAdminToken) {
             console.log("Admin token is valid, loading admin dashboard.");
-            document.getElementById('auth-section').style.display = 'none';
-            const adminDashboard = document.getElementById('admin-dashboard');
-            adminDashboard.classList.remove('hidden');
-            adminDashboard.style.display = 'block';
-            initAdminDashboard();
-            ui.showDashboard();
+            // document.getElementById('auth-section').style.display = 'none';
+            // const adminDashboard = document.getElementById('admin-dashboard');
+            // adminDashboard.classList.remove('hidden');
+            // adminDashboard.style.display = 'block';
+            // initAdminDashboard();
+            // ui.showDashboard();
+            initializeAdminApp();
         } else {
             console.log("Admin token is invalid, clearing storage and showing login.");
             localStorage.clear();
@@ -55,12 +56,13 @@ document.addEventListener('DOMContentLoaded', async () => {
             
             if (isValidToken) {
                 console.log("Token is valid, loading customer dashboard.");
-                document.getElementById("auth-section").classList.add("hidden");
-                document.getElementById("customer-dashboard").classList.remove("hidden");
+                // document.getElementById("auth-section").classList.add("hidden");
+                // document.getElementById("customer-dashboard").classList.remove("hidden");
                 
-                // Import and load customer dashboard
-                const { loadCustomerDashboard } = await import('./assets/js/customerDashboard.js');
-                loadCustomerDashboard(customerId);
+                // // Import and load customer dashboard
+                // const { loadCustomerDashboard } = await import('./assets/js/customerDashboard.js');
+                // loadCustomerDashboard(customerId);
+                initializeCustomerApp();
             } else {
                 console.log("Token is invalid, clearing storage and showing login.");
                 localStorage.clear();
@@ -69,7 +71,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
         } else {
             // Token exists but missing user data, clear storage and show login
-            localStorage.clear();
+        
             ui.hideAllSections();
             document.getElementById('auth-section').style.display = 'flex';
         }
@@ -85,7 +87,12 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 function attachEventListeners() {
 
-    document.getElementById('login-button')?.addEventListener('click', auth.login);
+    document.getElementById('login-button')?.addEventListener('click', async () => {
+        const success = await auth.login();
+        if (success) {
+            initializeAdminApp();
+        }
+    });
     document.getElementById('logout-button')?.addEventListener('click', auth.logoutAdmin);
 
 
@@ -99,6 +106,8 @@ function attachEventListeners() {
     document.getElementById('nav-customer-payments')?.addEventListener('click', ui.showCustomerPayments);
     document.getElementById('nav-insights')?.addEventListener('click', ui.showInsights);
 
+    // customer management
+    
     document.getElementById('add-customer-btn')?.addEventListener('click', customers.addCustomer);
     document.getElementById('reset-btn')?.addEventListener('click', customers.resetForm);
     document.getElementById('span-close-edit-customer-modal')?.addEventListener('click', customers.closeEditCustomerModal);
@@ -106,17 +115,13 @@ function attachEventListeners() {
     document.getElementById('update-customer-btn')?.addEventListener('click', customers.updateCustomer);
     document.getElementById('span-close-order-history')?.addEventListener('click', closeHistoryModal);
 
-    initAdminDashboard();
-    initCustomers();
-    refreshCustomers();
-    initOrders();
-    initPayments();
-    initCustomerDashboard();
-    initCustomerPayments();
-    initDialogs();
+    document.getElementById('login-customer-btn')?.addEventListener('click', async () => {
+        const success = await customerAuth.loginCustomer();
+        if (success) {
+            initializeCustomerApp();
+        }
+    });
 
-
-    //Customer Auth 
     document.getElementById('tab-admin')?.addEventListener('click', () => ui.showAuthTab('admin'));
     document.getElementById('tab-customer')?.addEventListener('click', () => ui.showAuthTab('customer'));
     
@@ -130,17 +135,58 @@ function attachEventListeners() {
         ui.toggleAuthMode('login');
     });
 
-    
+    // initAdminDashboard();
+    // initCustomers();
+    // refreshCustomers();
+    // initOrders();
+    // initPayments();
+    // initCustomerDashboard();
+    // initCustomerPayments();
+    // initDialogs();
+
+
+    //Customer Profile
 
     document.getElementById('view-profile-btn')?.addEventListener('click', ui.showCustomerProfileSidebar);
     document.getElementById('close-customer-profile-sidebar')?.addEventListener('click', ui.closeCustomerProfileSidebar);
     document.getElementById('sidebar-overlay')?.addEventListener('click', ui.closeCustomerProfileSidebar);
     document.getElementById('change-password-btn')?.addEventListener('click', ui.showPasswordChangeForm);
-    // document.getElementById('submit-password-change-btn')?.addEventListener('click', submitPasswordChange);
     document.getElementById('close-password-change-btn')?.addEventListener('click', ui.cancelPasswordChange);
 
+    initDialogs();
     customerAuth.initCustomerAuth();
     
 
 
 }
+function initializeAdminApp() {
+    document.getElementById('auth-section').style.display = 'none';
+    const adminDashboard = document.getElementById('admin-dashboard');
+    adminDashboard.classList.remove('hidden');
+    adminDashboard.style.display = 'block';
+
+    // Now safe to fetch data
+    initAdminDashboard();
+    initCustomers();
+    refreshCustomers();
+    initOrders();
+    initPayments();
+    initCustomerPayments();
+    ui.showDashboard();
+}
+
+function initializeCustomerApp() {
+    const customerId = localStorage.getItem('customerId');
+    document.getElementById("auth-section").classList.add("hidden");
+    document.getElementById("customer-dashboard").classList.remove("hidden");
+
+    initCustomerDashboard();
+    initCustomerPayments();
+    initPayments(); // Add this to initialize payment modal for customers*
+    loadCustomerDashboard(customerId);
+
+    
+   
+}
+
+export { initializeAdminApp, initializeCustomerApp };

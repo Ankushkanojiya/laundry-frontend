@@ -33,12 +33,18 @@ export async function login() {
         adminDashboard.classList.remove("hidden");
         adminDashboard.style.display="block";
 
-        initAdminDashboard();
-        showDashboard();
+        // initAdminDashboard();
+        // showDashboard();
+        return true;
     } catch (error) {
         showMessage(error.message, 'error', 'login-message');
         console.error('Login error:', error);
     }
+}
+
+export function isAdminLoggedIn() {
+    const adminToken = localStorage.getItem("adminToken");
+    return !!adminToken;
 }
 
 export function logoutAdmin(){

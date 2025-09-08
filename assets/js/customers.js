@@ -9,6 +9,7 @@ import { showConfirmDialog } from './dialogs.js';
 let currentCustomerId = null;
 
 export function initCustomers() {
+    console.log('Initializing customers module...');
 
     const tableBody = document.getElementById('customers-table-body');
     tableBody?.addEventListener('click', (event) => {
@@ -33,14 +34,46 @@ export function initCustomers() {
     // Listeners for the "Add Customer" form
     document.getElementById('add-customer-button')?.addEventListener('click', addCustomer);
 
-    // Listeners for the "Edit Customer" modal
-    document.getElementById('update-customer-btn')?.addEventListener('click', updateCustomer);
-    document.getElementById('span-close-edit-modal')?.addEventListener('click', closeEditCustomerModal);
-    document.getElementById('cancel-edit-modal-btn')?.addEventListener('click', closeEditCustomerModal);
-    document.getElementById('delete-customer-btn')?.addEventListener('click', () => {
-        const id = getCurrentCustomerId();
-        deleteCustomer(id);
-    });
+    // Remove existing event listeners to prevent duplicates
+    const updateBtn = document.getElementById('update-customer-btn');
+    const spanCloseBtn = document.getElementById('span-close-edit-modal');
+    const cancelBtn = document.getElementById('cancel-edit-modal-btn');
+    const deleteBtn = document.getElementById('delete-customer-btn');
+
+    // Remove existing listeners by cloning and replacing elements
+    if (updateBtn) {
+        const newUpdateBtn = updateBtn.cloneNode(true);
+        updateBtn.parentNode.replaceChild(newUpdateBtn, updateBtn);
+        newUpdateBtn.addEventListener('click', updateCustomer);
+    }
+
+    if (spanCloseBtn) {
+        const newSpanCloseBtn = spanCloseBtn.cloneNode(true);
+        spanCloseBtn.parentNode.replaceChild(newSpanCloseBtn, spanCloseBtn);
+        newSpanCloseBtn.addEventListener('click', closeEditCustomerModal);
+    }
+
+    if (cancelBtn) {
+        const newCancelBtn = cancelBtn.cloneNode(true);
+        cancelBtn.parentNode.replaceChild(newCancelBtn, cancelBtn);
+        newCancelBtn.addEventListener('click', closeEditCustomerModal);
+    }
+
+    if (deleteBtn) {
+        const newDeleteBtn = deleteBtn.cloneNode(true);
+        deleteBtn.parentNode.replaceChild(newDeleteBtn, deleteBtn);
+        newDeleteBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            const id = getCurrentCustomerId();
+            console.log('Delete button clicked for customer ID:', id);
+            if (id) {
+                deleteCustomer(id);
+            }
+        });
+    }
+
+    console.log('Customers module initialized');
 }
 export function getCurrentCustomerId() {
     return currentCustomerId;
@@ -195,6 +228,7 @@ export async function updateCustomer() {
 }
 
 export async function deleteCustomer(id) {
+    console.log("Attempting to delete customer ID:", id);
     const confirmed = await showConfirmDialog(
         'Are you sure you want to delete this customer? This action cannot be undone.',
         {
@@ -204,9 +238,10 @@ export async function deleteCustomer(id) {
             confirmClass: 'danger-button'
         }
     );
+    console.log("Confirmation result:", confirmed);
 
     if (!confirmed) return;
-
+    console.log("Confirmed deletion of customer ID:", id);
     try {
         const response = await fetch(`${BASE_URL}/api/customers/${id}`, {
             method: 'DELETE',

@@ -2,11 +2,12 @@ import { BASE_URL } from "./config.js";
 import { getCustomerAuthHeaders } from "./customerAuth.js";
 import { formatDateTime } from "./utils.js";
 import { showInvoiceModal } from "./payments.js"
+import { closeInvoiceModal,showCustomerPaymentModal } from "./payments.js"
 
 
 
 export function initCustomerDashboard() {
-
+    console.log('Attempting to find #customer-payment-body:', document.getElementById('customer-payment-body'));
     document.getElementById('customer-payment-body')?.addEventListener('click', (event) => {
         const button = event.target.closest('.view-invoice-btn');
         if (!button) return;
@@ -21,6 +22,18 @@ export function initCustomerDashboard() {
         showInvoiceModal(payment);
     });
     document.getElementById('logout-customer-btn')?.addEventListener('click', logoutCustomer);
+    document.getElementById('close-invoice-modal')?.addEventListener('click', closeInvoiceModal);
+
+
+    document.addEventListener('customerPaymentSuccess', () => {
+        console.log('Payment success event received, refreshing dashboard data...');
+        const customerId = localStorage.getItem("customerId");
+        if (customerId) {
+            fetchCustomerBalance(customerId);
+            fetchCustomerOrders(customerId);
+            fetchCustomerPayments(customerId);
+        }
+    });
 }
 export async function fetchCustomerBalance(customerId) {
     try {
@@ -133,5 +146,11 @@ export async function loadCustomerDashboard(customerId) {
     fetchCustomerBalance(customerId);
     fetchCustomerOrders(customerId);
     fetchCustomerPayments(customerId);
+
+    const modalBtn = document.getElementById('show-customer-payment-modal');
+    if (modalBtn) {
+      modalBtn.removeEventListener('click', showCustomerPaymentModal);
+      modalBtn.addEventListener('click', showCustomerPaymentModal);
+    }
 }
 
