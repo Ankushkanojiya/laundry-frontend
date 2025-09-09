@@ -78,22 +78,23 @@
 }
 
 #show-customer-payment-modal {
-    background: white;
-    color: #2E7D32;
-    border: none;
-    padding: 12px 24px;
-    border-radius: 8px;
-    font-weight: 600;
+    background: #007bff;
+    color: white;
+    border: 2px solid #007bff;
+    padding: 10px 20px;
+    border-radius: 4px;
+    font-weight: 500;
     cursor: pointer;
     transition: all 0.2s ease;
     display: flex;
     align-items: center;
     gap: 8px;
+    font-size: 14px;
 }
 
-#pay-now-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+#show-customer-payment-modal:hover {
+    background: #0056b3;
+    border-color: #0056b3;
 }
 
 /* Table Container Styling */

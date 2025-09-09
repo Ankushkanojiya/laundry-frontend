@@ -12,22 +12,45 @@ export function initCustomers() {
     console.log('Initializing customers module...');
 
     const tableBody = document.getElementById('customers-table-body');
+    
+    // Handle row clicks to show action options
     tableBody?.addEventListener('click', (event) => {
         const button = event.target.closest('button');
-        if (!button) return;
+        if (button) {
+            // Handle button clicks
+            const { action, id, name } = button.dataset;
+            switch (action) {
+                case 'edit':
+                    editCustomer(id);
+                    break;
+                case 'view-orders':
+                    viewOrders(id, name);
+                    break;
+                case 'view-transactions':
+                    viewTransactions(id, name);
+                    break;
+                case 'close-actions':
+                    hideCustomerActions();
+                    break;
+            }
+            return;
+        }
 
-        const { action, id, name } = button.dataset;
+        // Handle row clicks to show actions
+        const row = event.target.closest('tr');
+        if (row && !row.classList.contains('no-data-row')) {
+            const customerId = row.dataset.customerId;
+            const customerName = row.dataset.customerName;
+            if (customerId && customerName) {
+                showCustomerActions(row, customerId, customerName);
+            }
+        }
+    });
 
-        switch (action) {
-            case 'edit':
-                editCustomer(id);
-                break;
-            case 'view-orders':
-                viewOrders(id, name);
-                break;
-            case 'view-transactions':
-                viewTransactions(id, name);
-                break;
+    // Close actions when clicking outside
+    document.addEventListener('click', (event) => {
+        if (!event.target.closest('#customers-table')) {
+            hideCustomerActions();
         }
     });
 
@@ -89,33 +112,75 @@ export async function refreshCustomers() {
 
         const customers = await response.json();
         const tableBody = document.querySelector('#customers-table-body');
+        
+        // Hide any existing actions first
+        hideCustomerActions();
+        
         if (customers.length === 0) {
-            tableBody.innerHTML = `<tr><td colspan="4" style="text-align:center">No Customers found</td></tr>`;
+            tableBody.innerHTML = `<tr class="no-data-row"><td colspan="3" style="text-align:center">No Customers found</td></tr>`;
             return;
         }
+        
         tableBody.innerHTML = customers.map(customer => `
-            <tr>
+            <tr class="customer-row" data-customer-id="${customer.id}" data-customer-name="${customer.name}" style="cursor: pointer;">
                 <td>#${customer.id}</td>
                 <td>${customer.name}</td>
                 <td>${customer.phoneNumber}</td>
-                <td>
-                    <div class="action-buttons">
-                        <button class="view-orders-btn" data-action="view-orders" data-id="${customer.id}" data-name="${customer.name}" title="View Orders">
-                            Orders
-                        </button>
-                        <button class="view-invoice-btn" data-action="view-transactions" data-id="${customer.id}" data-name="${customer.name}" title="View Transactions">
-                            Transactions
-                        </button>
-                        <button class="edit-btn" data-action="edit" data-id="${customer.id}" title="Edit Customer">
-                            ✏️ Edit
-                        </button>
-                    </div>
-                </td>
             </tr>
         `).join('');
     } catch (error) {
         showMessage(error.message, 'error');
     }
+}
+
+// Show action buttons when customer row is clicked
+function showCustomerActions(row, customerId, customerName) {
+    // Hide any existing actions first
+    hideCustomerActions();
+    
+    // Get phone number from the row
+    const phoneNumber = row.cells[2].textContent;
+    
+    // Add active state to clicked row
+    row.classList.add('customer-row-active');
+    
+    // Create actions row
+    const actionsRow = document.createElement('tr');
+    actionsRow.classList.add('customer-actions-row');
+    actionsRow.innerHTML = `
+        <td colspan="3" class="customer-actions-cell" data-phone="📱 ${phoneNumber}">
+            <div class="customer-action-buttons">
+                <button class="view-orders-btn" data-action="view-orders" data-id="${customerId}" data-name="${customerName}">
+                    📋 Orders
+                </button>
+                <button class="view-invoice-btn" data-action="view-transactions" data-id="${customerId}" data-name="${customerName}">
+                    💳 Transactions
+                </button>
+                <button class="edit-btn" data-action="edit" data-id="${customerId}">
+                    ✏️ Edit
+                </button>
+                <button class="close-actions-btn" data-action="close-actions">
+                    ✕ Close
+                </button>
+            </div>
+        </td>
+    `;
+    
+    // Insert actions row after the clicked row
+    row.parentNode.insertBefore(actionsRow, row.nextSibling);
+}
+
+// Hide customer actions
+function hideCustomerActions() {
+    // Remove active state from all rows
+    document.querySelectorAll('.customer-row-active').forEach(row => {
+        row.classList.remove('customer-row-active');
+    });
+    
+    // Remove all action rows
+    document.querySelectorAll('.customer-actions-row').forEach(row => {
+        row.remove();
+    });
 }
 
 

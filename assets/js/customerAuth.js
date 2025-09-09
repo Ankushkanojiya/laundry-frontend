@@ -32,14 +32,14 @@ export async function registerCustomer() {
         });
 
         if (!response.ok) {
-            throw new Error("Contact your admin to registeration");
+            throw new Error("You are already registered. Please log in.");
         }
 
         const message=await response.text();
         showMessage(message, "success", "customer-auth-message");
         return true;
     }catch(error){
-        showMessage("An error occurred. Please try again.", "error", "customer-auth-message");
+        showMessage("Contact your admin to registeration", "error", "customer-auth-message");
         console.error("Registration error:", error);
     }
 

@@ -182,6 +182,7 @@ export async function renderPaymentSummary(data) {
       <td>₹${a.balance.toFixed(2)}</td>
       <td>
         <button 
+          class="view-orders-btn"
           data-action="view-orders" 
           data-id="${a.customerId}" 
           data-name="${a.customerName}">
@@ -190,6 +191,7 @@ export async function renderPaymentSummary(data) {
       </td>
       <td>
         <button 
+          class="pay-btn"
           data-action="pay" 
           data-id="${a.customerId}" 
           data-name="${a.customerName}" 
