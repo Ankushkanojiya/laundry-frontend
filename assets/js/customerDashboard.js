@@ -2,7 +2,7 @@ import { BASE_URL } from "./config.js";
 import { getCustomerAuthHeaders } from "./customerAuth.js";
 import { formatDateTime } from "./utils.js";
 import { showInvoiceModal } from "./payments.js"
-import { closeInvoiceModal,showCustomerPaymentModal } from "./payments.js"
+import { closeInvoiceModal, showCustomerPaymentModal } from "./payments.js"
 
 
 
@@ -42,10 +42,25 @@ export async function fetchCustomerBalance(customerId) {
             headers: getCustomerAuthHeaders()
         });
         if (!response.ok) throw new Error("Failed to fetch customer data");
-        const balance = parseFloat(await response.text());
 
-        const display = document.getElementById('customer-balance');
-        display.textContent = `₹${balance.toFixed(2)}`;
+        const rawBalance = await response.text();
+        const balance = parseFloat(rawBalance);
+
+        if (isNaN(balance)) {
+            throw new Error("Invalid balance value");
+        }
+
+        const customerBalanceLabel = document.getElementById('customer-balance-label');
+        const customerBalance = document.getElementById('customer-balance');
+
+        if (balance < 0) {
+            customerBalanceLabel.textContent = "Advance Balance:";
+        } else {
+            customerBalanceLabel.textContent = "Balance Due:";
+        }
+
+        const displayAmount = Math.abs(balance);
+        customerBalance.textContent = `₹${displayAmount.toFixed(2)}`;
     } catch (error) {
         console.error("Error fetching customer data:", error);
         document.getElementById("customer-balance").textContent = "Error";
@@ -135,22 +150,22 @@ export async function fetchCustomerPayments(customerId) {
 
 function logoutCustomer() {
     localStorage.clear();
-    location.reload();  
+    location.reload();
 }
 
 export async function loadCustomerDashboard(customerId) {
     const name = localStorage.getItem("customerName");
     document.getElementById("customer-name-display").textContent = name;
 
-    
+
     fetchCustomerBalance(customerId);
     fetchCustomerOrders(customerId);
     fetchCustomerPayments(customerId);
 
     const modalBtn = document.getElementById('show-customer-payment-modal');
     if (modalBtn) {
-      modalBtn.removeEventListener('click', showCustomerPaymentModal);
-      modalBtn.addEventListener('click', showCustomerPaymentModal);
+        modalBtn.removeEventListener('click', showCustomerPaymentModal);
+        modalBtn.addEventListener('click', showCustomerPaymentModal);
     }
 }
 
