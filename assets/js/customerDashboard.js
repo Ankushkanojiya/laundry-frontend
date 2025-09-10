@@ -45,7 +45,7 @@ export async function fetchCustomerBalance(customerId) {
         const balance = parseFloat(await response.text());
 
         const display = document.getElementById('customer-balance');
-        display.textContent = balance.toFixed(2);
+        display.textContent = `₹${balance.toFixed(2)}`;
     } catch (error) {
         console.error("Error fetching customer data:", error);
         document.getElementById("customer-balance").textContent = "Error";

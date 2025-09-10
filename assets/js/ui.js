@@ -293,5 +293,19 @@ export function showProfileMessage(message, type = "error") {
     if (!messageBox) return;
 
     messageBox.textContent = message;
-    messageBox.style.color = type === "success" ? "green" : "red";
+    
+    if (type === "success") {
+        messageBox.style.color = "green";
+    } else if (type === "info") {
+        messageBox.style.color = "#007bff"; // Blue color for info messages
+        // Auto-clear info messages after 2 seconds
+        setTimeout(() => {
+            if (messageBox.textContent === message) {
+                messageBox.textContent = "";
+                messageBox.style.color = "";
+            }
+        }, 2000);
+    } else {
+        messageBox.style.color = "red";
+    }
 }

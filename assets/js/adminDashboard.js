@@ -97,7 +97,7 @@ export async function renderDashboardPendingOrders(orders){
                             data-action="update-status-dashboard" 
                             data-id="${order.id}" 
                             data-status="IN_PROGRESS">
-                        Start Order
+                        Start
                     </button>
             </td>
         </tr>`

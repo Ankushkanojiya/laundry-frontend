@@ -1,26 +1,15 @@
-body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    -webkit-tap-highlight-color: transparent;
-    background: #f7f7f7;
-}
+/* Main stylesheet - contains layout and remaining styles not yet modularized */
 
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-}
-
-button {
-    padding: 12px 20px;
-    margin: 5px;
-    cursor: pointer;
-    touch-action: manipulation;
-    appearance: none;
-    -webkit-appearance: none;
-}
+/* Import modular stylesheets */
+@import url('./base.css');
+@import url('./admin-dashboard.css');
+@import url('./tables.css');
+@import url('./forms.css');
+@import url('./orders.css');
+@import url('./auth.css');
+@import url('./modal-styles.css');
+@import url('./customer-dashboard.css');
+@import url('./insights-styles.css');
 
 table {
     border-collapse: collapse;

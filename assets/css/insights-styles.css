@@ -84,36 +84,76 @@
     overflow: hidden;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     margin: 15px 0;
+    table-layout: fixed;
 }
 
-#insights-section th {
+#insights-section table th {
     background: #f8f9fa;
     color: #2E7D32;
     font-weight: 600;
     padding: 15px;
-    text-align: left;
+    text-align: center !important;
     border-bottom: 2px solid #e8f5e9;
+    white-space: nowrap;
+    width: 50%;
 }
 
-#insights-section td {
+#insights-section table td {
     padding: 12px 15px;
     border-bottom: 1px solid #f0f0f0;
     color: #444;
+    text-align: center !important;
+    vertical-align: middle;
+    word-wrap: break-word;
+    width: 50%;
 }
 
-#insights-section tr:hover td {
+#insights-section table tr:hover td {
     background-color: #f8f9fa;
 }
 
-#insights-section td:first-child {
+#insights-section table td:first-child {
     font-weight: 500;
     color: #333;
+    text-align: center !important;
 }
 
 #insights-section #top-customers-body td:nth-child(2),
 #insights-section #due-customers-body td:nth-child(2) {
     font-family: monospace;
     font-size: 15px;
+    font-weight: 600;
+    color: #2E7D32;
+    text-align: center !important;
+}
+
+/* Empty state for tables */
+#insights-section tbody:empty::after {
+    content: "No data available";
+    display: table-cell;
+    text-align: center;
+    padding: 20px;
+    color: #666;
+    font-style: italic;
+}
+
+/* No data cell styling */
+#insights-section .no-data-cell {
+    text-align: center !important;
+    padding: 20px !important;
+    color: #666 !important;
+    font-style: italic !important;
+    font-size: 14px !important;
+}
+
+/* Ensure specificity for table content alignment */
+#insights-section table tbody tr td {
+    text-align: center !important;
+    vertical-align: middle !important;
+}
+
+#insights-section table thead tr th {
+    text-align: center !important;
 }
 
 /* Responsive adjustments */
@@ -135,14 +175,42 @@
     }
 
     #insights-section table {
-        display: block;
+        display: table;
         overflow-x: auto;
         -webkit-overflow-scrolling: touch;
+        width: 100%;
+        margin: 10px 0;
+        border-radius: 8px;
     }
     
-    #insights-section td, 
-    #insights-section th {
+    #insights-section table th, 
+    #insights-section table td {
         white-space: nowrap;
-        padding: 12px;
+        padding: 10px 8px;
+        text-align: center !important;
+    }
+
+    #insights-section table th {
+        font-size: 14px;
+        padding: 12px 8px;
+    }
+
+    #insights-section table td {
+        font-size: 13px;
+        padding: 10px 8px;
+    }
+
+    #insights-section #top-customers-body td:nth-child(2),
+    #insights-section #due-customers-body td:nth-child(2) {
+        font-size: 13px;
+    }
+
+    /* Ensure mobile tables are properly centered */
+    #insights-section table tbody tr td {
+        text-align: center !important;
+    }
+
+    #insights-section table thead tr th {
+        text-align: center !important;
     }
 }

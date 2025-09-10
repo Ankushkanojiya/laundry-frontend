@@ -3,11 +3,16 @@
 
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Laundry Admin</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="modal-styles.css">
-    <link rel="stylesheet" href="insights-styles.css">
-    <link rel="stylesheet" href="customer-dashboard.css">
+    <link rel="stylesheet" href="assets/css/style-new.css">
+    <link rel="stylesheet" href="assets/css/base.css">
+    <link rel="stylesheet" href="assets/css/auth.css">
+    <link rel="stylesheet" href="assets/css/admin-dashboard.css">
+    <link rel="stylesheet" href="assets/css/modal-styles.css">
+    <link rel="stylesheet" href="assets/css/insights-styles.css">
+    <link rel="stylesheet" href="assets/css/customer-dashboard.css">
+    <link rel="stylesheet" href="assets/css/forms.css">
+    <link rel="stylesheet" href="assets/css/tables.css">
+    <link rel="stylesheet" href="assets/css/orders.css">
 </head>
 
 <body>
@@ -39,7 +44,7 @@
                 <div id="customer-login-section">
                     <h2>Customer Login</h2>
                     <div class="form-group">
-                        <input type="text" id="customer-phone-login" placeholder="Phone Number">
+                        <input type="number" id="customer-phone-login" placeholder="Phone Number">
                     </div>
                     <div class="form-group">
                         <input type="password" id="customer-password-login" placeholder="Password">
@@ -53,7 +58,7 @@
                 <div id="customer-register-section" class="hidden">
                     <h2>Register New Account</h2>
                     <div class="form-group">
-                        <input type="text" id="customer-phone-register" placeholder="Phone Number">
+                        <input type="number" id="customer-phone-register" placeholder="Phone Number">
                     </div>
                     <div class="form-group">
                         <input type="password" id="customer-password-register" placeholder="Password">
@@ -150,18 +155,18 @@
         <div class="balance-box">
             <h2>
                 <span class="icon">💰</span>
-                Balance Due: ₹<span id="customer-balance">0</span>
+                Balance Due: <span id="customer-balance">₹ 0</span>
             </h2>
             <button id="show-customer-payment-modal" class="pay-now-btn">
                 <span class="icon">💳</span> Pay Now
             </button>
         </div>
-
-        <div class="table-container">
-            <h3>
+        <h3>
                 <span class="icon">📦</span>
                 Your Orders
             </h3>
+        <div class="table-container">
+            
             <table class="order-table">
                 <thead>
                     <tr>
@@ -176,14 +181,14 @@
                 </tbody>
             </table>
         </div>
-
-        <div id="customer-orders-container"></div>
-
-        <div class="table-container">
-            <h3>
+        <h3>
                 <span class="icon">💵</span>
                 Your Payments
             </h3>
+        <div id="customer-orders-container"></div>
+
+        <div class="table-container">
+            
             <table class="payment-table">
                 <thead>
                     <tr>

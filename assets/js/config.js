@@ -1,1 +1,1 @@
-export const BASE_URL = "https://laundry-system-cwg6.onrender.com";
+export const BASE_URL = "http://192.168.0.109:8080"; 

@@ -22,7 +22,7 @@ export async function loadInsights() {
         if (topCustomersBody) {
             topCustomersBody.innerHTML = ""; 
             if (!data.topCustomers || data.topCustomers.length === 0) {
-                topCustomersBody.innerHTML = `<tr><td colspan="2" style="text-align:center;">No top customers found.</td></tr>`;
+                topCustomersBody.innerHTML = `<tr><td colspan="2" class="no-data-cell">No top customers found.</td></tr>`;
             } else {
                 data.topCustomers.forEach(c => {
                     topCustomersBody.innerHTML += `
@@ -40,7 +40,7 @@ export async function loadInsights() {
         if (dueCustomersBody) {
             dueCustomersBody.innerHTML = ""; 
             if (!data.customersWithDue || data.customersWithDue.length === 0) {
-                dueCustomersBody.innerHTML = `<tr><td colspan="2" style="text-align:center;">No customers with due payments.</td></tr>`;
+                dueCustomersBody.innerHTML = `<tr><td colspan="2" class="no-data-cell">No customers with due payments.</td></tr>`;
             } else {
                 data.customersWithDue.forEach(c => {
                     dueCustomersBody.innerHTML += `

@@ -130,6 +130,9 @@ export async function submitPasswordChange() {
         return;
     }
 
+    // Show loading message for 2 seconds
+    showProfileMessage("Updating password...", "info");
+    
     try {
         console.log("inside backend");
         const response = await fetch(`${BASE_URL}/api/customer-auth/me/changePassword`, {
@@ -140,26 +143,34 @@ export async function submitPasswordChange() {
 
         const msg = await response.text();
         console.log(msg);
-        showProfileMessage(msg, response.ok ? "success" : "error");
 
         if (response.ok) {
-            // Clear form and hide password change section
+            // Show success toast message for 3 seconds
+            showProfileMessage("Your password successfully changed! Please log in again.", "success");
+            
+            // Clear form fields immediately
             const oldPasswordField = document.getElementById("old_password");
             const newPasswordField = document.getElementById("new_password");
-            const passwordForm = document.getElementById("password-change-form");
-            const changePasswordBtn = document.getElementById("change-password-btn");
-
             if (oldPasswordField) oldPasswordField.value = "";
             if (newPasswordField) newPasswordField.value = "";
-            if (passwordForm) passwordForm.classList.add("hidden");
-            if (changePasswordBtn) changePasswordBtn.classList.remove("hidden");
 
+            // Wait 3 seconds before hiding the form so user can see the success message
             setTimeout(() => {
+                const passwordForm = document.getElementById("password-change-form");
+                const changePasswordBtn = document.getElementById("change-password-btn");
+                
+                if (passwordForm) passwordForm.classList.add("hidden");
+                if (changePasswordBtn) changePasswordBtn.classList.remove("hidden");
+                
+                // Clear the success message after hiding the form
                 const messageElement = document.getElementById("customer-profile-message");
                 if (messageElement) {
                     messageElement.textContent = "";
+                    messageElement.style.color = "";
                 }
             }, 3000);
+        } else {
+            showProfileMessage(msg, "error");
         }
     } catch(RuntimeError) {
         showProfileMessage("An error occurred. Please try again.", "error");

@@ -1,0 +1,487 @@
+/* Admin Dashboard and Navigation Styles */
+
+/* Admin Header */
+.admin-header {
+    background: #ffffff;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    width: 100%;
+}
+
+.header-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 24px;
+    background: #4CAF50;
+    color: white;
+    height: 64px;
+}
+
+.header-content h2 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 500;
+}
+
+.logout-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #dc3545;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.logout-btn:hover {
+    background: #c82333;
+}
+
+/* Admin Sidebar */
+.admin-sidebar {
+    position: fixed;
+    top: 64px;
+    left: 0;
+    width: 250px;
+    height: calc(100vh - 64px);
+    background: #fff;
+    box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+    overflow-y: auto;
+    transition: transform 0.3s ease;
+    z-index: 100;
+}
+
+.admin-sidebar .sidebar-nav {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding: 16px;
+}
+
+.nav-items {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.nav-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    background: none;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    color: #333;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 100%;
+    text-align: left;
+    margin-bottom: 4px;
+    position: relative;
+    overflow: hidden;
+}
+
+.nav-item:hover {
+    background: #f0f0f0;
+    color: #2E7D32;
+}
+
+.nav-item.active {
+    background: #e8f5e9;
+    color: #2E7D32;
+    border-right: 4px solid #2E7D32;
+    font-weight: 600;
+    box-shadow: 0 2px 8px rgba(46, 125, 50, 0.15);
+    transform: translateX(4px);
+    transition: all 0.3s ease;
+}
+
+.nav-item .nav-icon {
+    font-size: 18px;
+    opacity: 0.8;
+    flex-shrink: 0;
+}
+
+.nav-icon {
+    margin-right: 8px;
+    font-size: 18px;
+}
+
+.sidebar-logout {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    background: #dc3545;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    color: white;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    width: 100%;
+    text-align: left;
+    margin-top: auto;
+}
+
+.sidebar-logout:hover {
+    background: #c82333;
+    transform: translateY(-1px);
+}
+
+/* Main Content Area */
+.main-content {
+    background: #f4f6f8;
+    min-height: calc(100vh - 64px);
+    padding: 20px;
+    margin-left: 250px;
+    position: relative;
+    overflow-x: hidden;
+    overflow-y: auto;
+    transition: margin-left 0.3s ease;
+    max-width: calc(100vw - 250px);
+    box-sizing: border-box;
+}
+
+#admin-dashboard {
+    min-height: 100vh;
+    background: #f4f6f8;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Dashboard sections */
+#stats-cards,
+#add-customer-section,
+#take-order-section,
+#manage-customers-section,
+#manage-order-section,
+#payments-section,
+#customer-payment-section,
+#insights-section {
+    width: 100%;
+    background: #f4f6f8;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    display: none;
+    margin: 0;
+    padding: 20px;
+}
+
+#stats-cards.hidden,
+#add-customer-section.hidden,
+#take-order-section.hidden,
+#manage-customers-section.hidden,
+#manage-order-section.hidden,
+#payments-section.hidden,
+#customer-payment-section.hidden,
+#insights-section.hidden {
+    display: none;
+    opacity: 0;
+}
+
+/* Show active sections with proper styling */
+#stats-cards:not(.hidden),
+#add-customer-section:not(.hidden),
+#take-order-section:not(.hidden),
+#manage-customers-section:not(.hidden),
+#manage-order-section:not(.hidden),
+#payments-section:not(.hidden),
+#customer-payment-section:not(.hidden),
+#insights-section:not(.hidden) {
+    display: block;
+    opacity: 1;
+}
+
+/* Make stats cards relative for proper stacking */
+#stats-cards {
+    position: relative;
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Section containers */
+#add-customer-section,
+#take-order-section,
+#manage-customers-section,
+#manage-order-section,
+#payments-section,
+#customer-payment-section,
+#insights-section {
+    margin-top: 20px;
+}
+
+/* Hide sections by default */
+#add-customer-section.hidden,
+#take-order-section.hidden,
+#manage-customers-section.hidden,
+#manage-order-section.hidden,
+#payments-section.hidden,
+#customer-payment-section.hidden,
+#insights-section.hidden {
+    display: none !important;
+}
+
+/* Show active sections */
+#stats-cards:not(.hidden),
+#add-customer-section:not(.hidden),
+#take-order-section:not(.hidden),
+#manage-customers-section:not(.hidden),
+#manage-order-section:not(.hidden),
+#payments-section:not(.hidden),
+#customer-payment-section:not(.hidden),
+#insights-section:not(.hidden) {
+    opacity: 1;
+    visibility: visible;
+    position: relative;
+}
+
+/* Dashboard Cards */
+.dashboard-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 24px;
+    margin: 24px 0;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.card {
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+    transition: all 0.2s ease;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+
+.card-icon {
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    font-size: 24px;
+}
+
+.pending-card {
+    border-left: 4px solid #ffc107;
+    background: #fff3cd;
+}
+
+.pending-card .card-icon {
+    background: #fff8e1;
+    color: #ffc107;
+}
+
+.revenue-card {
+    border-left: 4px solid #4CAF50;
+    background: #d4edda;
+}
+
+.revenue-card .card-icon {
+    background: #e8f5e9;
+    color: #4CAF50;
+}
+
+.business-revenue-card {
+    border-left: 4px solid #9c27b0;
+    background: #e8d3f8;
+}
+
+.business-revenue-card .card-icon {
+    background: #f3e5f5;
+    color: #9c27b0;
+}
+
+.total-customer-card {
+    background: #fff3cd;
+    border-left: 5px solid #ffc107;
+}
+
+.total-revenue-card {
+    background: #cdfbff;
+    border-left: 5px solid #ffc107;
+}
+
+.card-content {
+    flex: 1;
+}
+
+.card h3 {
+    margin: 0 0 8px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #666;
+}
+
+.card p {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 600;
+    color: #333;
+}
+
+/* Section headers */
+.section-header {
+    margin: 24px;
+    color: #333;
+    font-size: 20px;
+    font-weight: 500;
+}
+
+/* Sidebar Toggle Button */
+.sidebar-toggle {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    display: none;
+    padding: 8px;
+}
+
+.toggle-icon {
+    display: block;
+    width: 20px;
+    height: 2px;
+    background: white;
+    position: relative;
+}
+
+.toggle-icon::before,
+.toggle-icon::after {
+    content: '';
+    position: absolute;
+    width: 20px;
+    height: 2px;
+    background: white;
+    left: 0;
+}
+
+.toggle-icon::before {
+    top: -6px;
+}
+
+.toggle-icon::after {
+    top: 6px;
+}
+
+/* Mobile Responsive Styles */
+@media (max-width: 768px) {
+    .admin-sidebar {
+        transform: translateX(-100%);
+    }
+
+    .admin-sidebar.active {
+        transform: translateX(0);
+    }
+
+    .main-content {
+        margin: 0;
+        max-width: 100vw;
+        padding: 0;
+    }
+    
+    .header-content {
+        padding: 0 16px;
+    }
+    
+    .dashboard-cards {
+        margin: 0;
+    }
+
+    .header-content {
+        padding: 12px 15px;
+    }
+
+    .header-content h2 {
+        font-size: 18px;
+    }
+
+    .sidebar-toggle {
+        display: block;
+        margin-right: 10px;
+    }
+
+    #stats-cards,
+    #add-customer-section,
+    #take-order-section,
+    #manage-customers-section,
+    #manage-order-section,
+    #payments-section,
+    #customer-payment-section,
+    #insights-section {
+        padding: 0;
+        margin: 0;
+    }
+
+    #payments-section,
+    #customer-payment-section,
+    #insights-section {
+        margin: 0;
+        padding: 15px;
+    }
+    
+    #payments-section > *,
+    #customer-payment-section > *,
+    #insights-section > * {
+        margin: 0;
+    }
+    
+    .dashboard-cards {
+        grid-template-columns: 1fr;
+        gap: 15px;
+        margin: 15px 0;
+    }
+    
+    .card {
+        padding: 15px;
+    }
+    
+    .card h3 {
+        font-size: 14px;
+    }
+    
+    .card p {
+        font-size: 20px;
+    }
+
+    .dashboard-cards {
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        gap: 12px;
+        margin: 12px;
+    }
+
+    .card {
+        padding: 15px;
+    }
+
+    .card h3 {
+        font-size: 0.9em;
+        margin-bottom: 8px;
+    }
+
+    .card p {
+        font-size: 1.4em;
+    }
+}

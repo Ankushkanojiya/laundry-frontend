@@ -1,0 +1,167 @@
+/* Base/Global Styles */
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+    background: #f7f7f7;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+/* Global Button Styles */
+button {
+    padding: 12px 20px;
+    margin: 5px;
+    cursor: pointer;
+    touch-action: manipulation;
+    appearance: none;
+    -webkit-appearance: none;
+    margin-right: 10px;
+    padding: 10px 20px;
+    background: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.download-btn {
+    margin-right: 10px;
+    padding: 10px 20px;
+    background: #4CAF50;
+    color: BLACK;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+/* Utility Classes */
+.hidden {
+    display: none !important;
+}
+
+.error {
+    color: #dc3545;
+    font-size: 13px;
+    margin-top: 4px;
+}
+
+.success {
+    color: green;
+}
+
+/* Loading Styles */
+.loading-spinner {
+    border: 4px solid rgba(0, 0, 0, 0.1);
+    border-radius: 50%;
+    border-top: 4px solid #4CAF50;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+    margin: 20px auto;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+/* Global Logout Button Styles */
+.logout-btn {
+    background: #e53935;
+    color: white;
+    padding: 8px 16px;
+    margin-top: 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.logout-btn {
+    background: #e53935;
+    color: white;
+    padding: 6px 12px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+/* Body Overflow Control */
+body {
+    overflow-x: hidden;
+}
+
+/* Radio Button Styles */
+input[type="radio"] {
+    margin: 0;
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+    accent-color: #4CAF50;
+    transform: scale(1.2);
+}
+
+/* Global Responsive Base */
+@media (max-width: 768px) {
+    body {
+        font-size: 14px;
+        padding: 0;
+        margin: 0;
+    }
+
+    button {
+        padding: 12px 16px;
+        font-size: 14px;
+        min-height: 44px;  /* For better touch targets */
+    }
+
+    input, select {
+        font-size: 16px;  /* Prevent iOS zoom */
+        padding: 12px;
+        min-height: 44px;
+    }
+}
+
+@media (max-width: 480px) {
+    /* Additional mobile improvements */
+    h2, h3 {
+        font-size: 1.2em;
+        margin: 15px 0;
+    }
+
+    .status-badge {
+        font-size: 12px;
+        padding: 4px 6px;
+    }
+
+    #admin-dashboard, #customer-dashboard {
+        padding: 0;
+    }
+}
