@@ -244,7 +244,7 @@ export async function refreshOrders() {
             tbody.innerHTML += `
                 <tr>
                     <td>#${order.id}</td>
-                    <td>${order.customerName}</td>
+                    <td><span class="customer-name-cell" title="${order.customerName}">${order.customerName}</span></td>
                     <td>${order.totalClothes} items (₹${order.totalAmount})</td>
                     <td>${orderDate}</td>
                     <td class="status-cell">

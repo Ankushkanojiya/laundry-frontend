@@ -351,6 +351,22 @@ td {
     font-size: 15px;
 }
 
+/* Truncate customer name to approx 10 characters with ellipsis; show full name on hover via title attribute */
+.customer-name-cell {
+    display: inline-block;
+    max-width: 10ch; 
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    vertical-align: middle;
+}
+
+@media (max-width: 768px) {
+    .customer-name-cell {
+        max-width: 12ch;
+    }
+}
+
 .customer-id {
     color: #666;
     font-size: 13px;
@@ -966,5 +982,33 @@ td {
     #manage-customers-section .no-data-row td::before {
         font-size: 28px;
         margin-bottom: 8px;
+    }
+}
+
+/* Mobile override: ensure active customer row highlights fully (fixes sticky first-column masking violet background) */
+@media (max-width: 768px) {
+    #manage-customers-section .customer-row-active,
+    #manage-customers-section .customer-row-active td {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+        color: #fff !important;
+    }
+
+    /* Override the sticky first column background so it doesn't hide the active color */
+    #manage-customers-section .customer-row-active td:first-child {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+        color: #fff !important;
+    }
+}
+
+@media (max-width: 480px) {
+    #manage-customers-section .customer-row-active,
+    #manage-customers-section .customer-row-active td {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+        color: #fff !important;
+    }
+
+    #manage-customers-section .customer-row-active td:first-child {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+        color: #fff !important;
     }
 }

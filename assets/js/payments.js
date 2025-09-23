@@ -230,6 +230,36 @@ function showPaymentModal(customerId, customerName, balance) {
   paymentAmountEl.value = '';
   showMessage('', 'clear', 'payment-message');
 
+  // Set avatar initials and accessibility
+  if (typeof setPaymentAvatar === 'function') setPaymentAvatar(customerName);
+
+  // Add quick amounts for admin flow too
+  const existingQuickAdmin = document.getElementById('payment-quick-amounts');
+  if (existingQuickAdmin) existingQuickAdmin.remove();
+  const quickAmountsAdmin = [100, 250, 500];
+  const fullAmtAdmin = Math.ceil(paymentBalance);
+  const quickHtmlAdmin = `
+    <div id="payment-quick-amounts" class="payment-quick-amounts" role="group" aria-label="Quick amount selectors">
+      ${quickAmountsAdmin.map(a => `<button type="button" class="quick-amt" data-amt="${a}">₹${a}</button>`).join('')}
+      <button type="button" class="quick-amt quick-full" data-amt="${fullAmtAdmin}">Full</button>
+    </div>
+  `;
+  paymentAmountEl.insertAdjacentHTML('beforebegin', quickHtmlAdmin);
+  const quickContainerAdmin = document.getElementById('payment-quick-amounts');
+  if (quickContainerAdmin) {
+    quickContainerAdmin.addEventListener('click', (ev) => {
+      const btn = ev.target.closest('.quick-amt');
+      if (!btn) return;
+      // toggle active state
+      quickContainerAdmin.querySelectorAll('.quick-amt').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const val = btn.dataset.amt;
+      paymentAmountEl.value = parseFloat(val).toFixed(2);
+      paymentAmountEl.focus();
+      paymentAmountEl.select();
+    });
+  }
+
   modal.classList.remove('hidden');
   modal.classList.add('modal--active');
   console.log('Payment modal shown successfully');
@@ -256,6 +286,14 @@ async function processPayment() {
   }
 
   try {
+    // Disable the submit button and show spinner to indicate progress
+    const processBtn = document.getElementById('process-payment-btn');
+    if (processBtn) {
+      processBtn.disabled = true;
+      processBtn.dataset.origHtml = processBtn.innerHTML;
+      processBtn.innerHTML = `<span class="btn-spinner" aria-hidden="true"></span>Processing...`;
+    }
+
     if (whoIsPaying === "admin") {
       const response = await fetch(`${BASE_URL}/api/payments`, {
         method: "POST",
@@ -290,6 +328,10 @@ async function processPayment() {
         return;
       }
 
+      // Give the user a clear, friendly handoff when redirecting to UPI
+      showMessage('Opening UPI app — please complete the payment and return to confirm.', 'info');
+      // Small visual cue before redirecting
+      await new Promise(res => setTimeout(res, 600));
       launchUpiIntent(amount);
 
       setTimeout(async () => {
@@ -312,6 +354,17 @@ async function processPayment() {
   } catch (error) {
     showMessage(error.message, 'error', 'payment-message');
     return;
+  }
+  finally {
+    // Restore the button state
+    const processBtnFinal = document.getElementById('process-payment-btn');
+    if (processBtnFinal) {
+      processBtnFinal.disabled = false;
+      if (processBtnFinal.dataset && processBtnFinal.dataset.origHtml) {
+        processBtnFinal.innerHTML = processBtnFinal.dataset.origHtml;
+        delete processBtnFinal.dataset.origHtml;
+      }
+    }
   }
 
 }
@@ -413,6 +466,44 @@ export async function showCustomerPaymentModal() {
 
     // Clear any previous messages
     showMessage('', 'clear', 'payment-message');
+
+    // Remove any existing quick-amount buttons (avoid duplicates)
+    const existingQuick = document.getElementById('payment-quick-amounts');
+    if (existingQuick) existingQuick.remove();
+
+    // Insert quick-amount shortcuts to improve UX
+    const quickAmounts = [100, 250, 500];
+    const fullAmount = Math.ceil(balance);
+    const quickHtml = `
+      <div id="payment-quick-amounts" class="payment-quick-amounts" role="group" aria-label="Quick amount selectors">
+        ${quickAmounts.map(a => `<button type="button" class="quick-amt" data-amt="${a}">₹${a}</button>`).join('')}
+        <button type="button" class="quick-amt quick-full" data-amt="${fullAmount}">Full</button>
+      </div>
+    `;
+    // Place quick amounts right above the amount input for visibility
+    paymentAmountEl.insertAdjacentHTML('beforebegin', quickHtml);
+
+    // Wire up quick-amount clicks
+    const quickContainer = document.getElementById('payment-quick-amounts');
+    if (quickContainer) {
+      quickContainer.addEventListener('click', (ev) => {
+        const btn = ev.target.closest('.quick-amt');
+        if (!btn) return;
+        const val = btn.dataset.amt;
+        paymentAmountEl.value = parseFloat(val).toFixed(2);
+        paymentAmountEl.focus();
+        paymentAmountEl.select();
+      });
+    }
+
+    // Accessibility: describe the input for screen readers
+    paymentAmountEl.setAttribute('aria-label', `Enter amount to pay for ${paymentCustomerName}`);
+
+    // Focus the amount input and select current text if any
+    setTimeout(() => {
+      paymentAmountEl.focus();
+      paymentAmountEl.select();
+    }, 120);
 
     // Show modal with proper classes for animation and visibility
     modal.classList.remove("hidden");
@@ -563,8 +654,19 @@ export async function showTransactionHistory(transactionData) {
 
 function closePaymentModal() {
   const modal = document.getElementById('payment-modal');
-  modal.classList.add('hidden');
-  modal.classList.remove('modal--active');
+  if (modal) {
+    modal.classList.add('hidden');
+    modal.classList.remove('modal--active');
+  }
+
+  // Remove quick amount shortcuts and keyboard handlers to avoid duplicates
+  const quick = document.getElementById('payment-quick-amounts');
+  if (quick) quick.remove();
+
+  const amountInput = document.getElementById('payment-amount');
+  if (amountInput && typeof handleAmountKeydown === 'function') {
+    amountInput.removeEventListener('keydown', handleAmountKeydown);
+  }
 }
 
 function closeTransactionModal() {
@@ -587,5 +689,37 @@ function attachPaymentModalListeners() {
   if (closePaymentModalBtn) {
     closePaymentModalBtn.removeEventListener('click', closePaymentModal);
     closePaymentModalBtn.addEventListener('click', closePaymentModal);
+  }
+
+  // Submit on Enter key from the amount input for faster flow
+  const amountInput = document.getElementById('payment-amount');
+  if (amountInput) {
+    // ensure we don't add duplicate handlers
+    amountInput.removeEventListener('keydown', handleAmountKeydown);
+    amountInput.addEventListener('keydown', handleAmountKeydown);
+  }
+}
+
+// small helper for Enter-to-submit behavior
+function handleAmountKeydown(e) {
+  if (e.key === 'Enter') {
+    e.preventDefault();
+    processPayment();
+  }
+}
+
+// helper to render avatar initials in modal
+function setPaymentAvatar(name) {
+  try {
+    const avatar = document.getElementById('payment-avatar');
+    if (!avatar) return;
+    const parts = (name || '').trim().split(/\s+/).filter(Boolean);
+    let initials = '';
+    if (parts.length === 0) initials = '👤';
+    else if (parts.length === 1) initials = parts[0].slice(0,2).toUpperCase();
+    else initials = (parts[0][0] + parts[1][0]).toUpperCase();
+    avatar.textContent = initials;
+  } catch (err) {
+    console.warn('setPaymentAvatar failed', err);
   }
 }

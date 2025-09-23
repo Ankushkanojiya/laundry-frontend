@@ -14,6 +14,11 @@
     box-sizing: border-box;
 }
 
+/* Slight glass blur for modern feel */
+.modal.modal--active {
+    backdrop-filter: blur(3px) saturate(1.03);
+}
+
 .modal.modal--active {
     display: flex;
 }
@@ -34,6 +39,46 @@
     max-width: 400px;
 }
 
+/* Payment modal quick amounts and spinner */
+.payment-quick-amounts {
+    display: flex;
+    gap: 0.4rem;
+    margin-bottom: 0.6rem;
+    flex-wrap: nowrap; /* force single-line compact layout */
+    align-items: center;
+}
+.payment-quick-amounts .quick-amt {
+    background: linear-gradient(180deg,#fff,#f6f6f8);
+    border: 1px solid #e0e0e6;
+    padding: 0.28rem 0.6rem; /* slightly reduced vertical padding */
+    border-radius: 999px; /* pill look */
+    cursor: pointer;
+    font-weight: 700;
+    color: #222;
+    transition: transform .08s ease, box-shadow .08s ease;
+    font-size: 14px;
+    white-space: nowrap;
+}
+.payment-quick-amounts .quick-amt:hover { transform: translateY(-1px); box-shadow: 0 4px 10px rgba(0,0,0,0.06); }
+.payment-quick-amounts .quick-full { background: linear-gradient(90deg,#ffe8e8,#fff4f4); border-color:#ffb4b4; }
+
+.btn-spinner {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    border: 2px solid rgba(255,255,255,0.2);
+    border-top-color: rgba(255,255,255,0.9);
+    margin-right: 0.5rem;
+    vertical-align: middle;
+    animation: spin 0.7s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Small responsive tweaks for payment modal */
+.modal--active #payment-modal .modal-content { max-width: 520px; }
+.payment-quick-amounts .quick-amt:focus { outline: 2px solid #6b46c1; outline-offset: 2px; }
+
 .modal-content h3 {
     margin: 0 0 25px 0;
     font-size: 22px;
@@ -43,6 +88,214 @@
     border-bottom: 2px solid #f0f0f0;
     padding-bottom: 15px;
 }
+
+/* Modern payment modal enhancements */
+#payment-modal .modal-content {
+    background: linear-gradient(180deg, #ffffff, #fbfdff);
+    border-radius: 12px;
+    padding: 22px 26px;
+    box-shadow: 0 10px 30px rgba(30,30,60,0.12);
+    border: 1px solid rgba(34,34,60,0.06);
+}
+
+/* subtle pop on show */
+.modal.modal--active .modal-content {
+    transform: translateY(0) scale(1);
+}
+.modal-content {
+    transition: transform 220ms cubic-bezier(.2,.8,.2,1), box-shadow 220ms ease;
+}
+.modal-content:hover {
+    transform: translateY(-3px) scale(1.004);
+}
+
+#payment-modal .payment-header {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+#payment-modal .payment-header .avatar {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: linear-gradient(135deg,#8E44AD,#6B46C1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-weight: 700;
+    font-size: 18px;
+    box-shadow: 0 6px 18px rgba(107,70,193,0.12);
+}
+
+/* Close button: cleaner, circular */
+.modal .close {
+    background: rgba(255,255,255,0.9);
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 6px 18px rgba(20,20,40,0.06);
+    right: 18px;
+    top: 18px;
+}
+.modal .close:hover { background: #fff; color: #222; transform: translateY(-2px); }
+
+#payment-modal .payment-header .customer-info {
+    display: flex;
+    flex-direction: column;
+}
+
+#payment-modal .customer-name {
+    font-weight: 700;
+    color: #222;
+    font-size: 16px;
+}
+
+#payment-modal .payment-sub {
+    font-size: 13px;
+    color: #666;
+}
+
+#payment-modal .payment-total {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin: 12px 0 16px 0;
+}
+
+#payment-modal .payment-total .amount {
+    font-size: 28px;
+    font-weight: 800;
+    color: #2E7D32;
+    letter-spacing: 0.5px;
+}
+
+/* subtle pulse when shown */
+@keyframes amountPulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.02); }
+    100% { transform: scale(1); }
+}
+.payment-total .amount.animate {
+    animation: amountPulse 900ms ease-in-out;
+}
+
+#payment-modal .payment-total .label {
+    font-size: 13px;
+    color: #666;
+}
+
+/* Make the amount input more tactile */
+#payment-modal input[type="number"],
+#payment-modal input[type="text"] {
+    padding: 14px 16px;
+    border-radius: 10px;
+    border: 1px solid rgba(34,34,60,0.06);
+    background: #fff;
+    box-shadow: inset 0 -1px 0 rgba(34,34,60,0.02);
+    font-size: 15px;
+    border-color: black;
+}
+
+#payment-modal input[type="number"]:focus {
+    border-color: #6B46C1;
+    box-shadow: 0 6px 20px rgba(107,70,193,0.08);
+}
+
+/* Pill style quick amounts */
+.payment-quick-amounts {
+    gap: 0.5rem;
+}
+.payment-quick-amounts .quick-amt {
+    padding: 0.35rem 0.75rem;
+    border-radius: 999px;
+    background: #fafafa;
+    border: 1px solid rgba(34,34,60,0.06);
+    color: #2b2b2b;
+    font-weight: 700;
+    box-shadow: 0 4px 14px rgba(18,18,30,0.03);
+    font-size: 14px;
+    white-space: nowrap;
+}
+.payment-quick-amounts .quick-amt.active { background: linear-gradient(90deg,#f3e8ff,#f9f5ff); }
+.payment-quick-amounts .quick-amt:hover {
+    transform: translateY(-2px);
+}
+
+.payment-quick-amounts .quick-full {
+    background: linear-gradient(90deg,#ffecec,#fff6f6);
+    border-color: rgba(255,72,72,0.12);
+    color: #c0392b;
+}
+
+.payment-quick-amounts .quick-amt.active {
+    box-shadow: 0 6px 18px rgba(107,70,193,0.14);
+    transform: translateY(-2px);
+    border-color: rgba(107,70,193,0.18);
+}
+
+/* Payment message (inline) */
+#payment-message.payment-message {
+    padding: 10px 12px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    font-size: 14px;
+}
+
+#payment-message.payment-message.success { background: #e8f5e9; color: #2e7d32; border: 1px solid #c8e6c9; }
+#payment-message.payment-message.error { background: #ffebee; color: #c62828; border: 1px solid #ffcdd2; }
+#payment-message.payment-message.info { background: #e9f4ff; color: #0b64c8; border: 1px solid #cfe7ff; }
+
+/* Primary process button: gradient, subtle shadow */
+#process-payment-btn {
+    background: linear-gradient(90deg,#2E7D32,#1B5E20);
+    color: #fff;
+    box-shadow: 0 8px 18px rgba(30,125,50,0.14);
+    border-radius: 10px;
+    padding: 12px 22px;
+    border: none;
+    font-weight: 700;
+    letter-spacing: 0.2px;
+}
+#process-payment-btn::before { content: "💳"; margin-right: 8px; }
+#process-payment-btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+}
+#process-payment-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+/* Secondary close button: clean and flat */
+#close-payment-modal {
+    background: transparent;
+    color: #6b6b6b;
+    border: 1px solid rgba(34,34,60,0.06);
+    padding: 10px 16px;
+    border-radius: 8px;
+}
+
+/* Layout for actions */
+.modal-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+}
+
+@media (max-width: 600px) {
+    #payment-modal .modal-content { padding: 16px; }
+    #payment-modal .payment-header .avatar { width: 48px; height: 48px; }
+    .modal-actions { flex-direction: column-reverse; }
+    #process-payment-btn { width: 100%; }
+}
+
 
 /* Simple Form Group Styles */
 .modal .form-group {
@@ -275,7 +528,26 @@
     max-height: 85vh;
     overflow-y: auto;
 }
-
+#edit-customer-modal .modal-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-top: 20px;
+}
+#edit-customer-modal .modal-actions .main-actions button {
+    flex: 1; /* Equal width for Save + Cancel */
+    max-width: 150px;
+}
+#edit-customer-modal .modal-actions .danger-zone {
+    margin-top: 16px;
+    border-top: 1px solid #eee;
+    padding-top: 16px;
+    text-align: center;
+}
+#edit-customer-modal .modal-actions .danger-button {
+    width: 100%;
+    max-width: none;
+}
 #edit-customer-modal .modal-content {
     max-width: 400px;
     max-height: none;
@@ -757,3 +1029,46 @@
         font-size: 18px;
     }
 }
+
+/* Desktop: make the payment modal larger and avoid inner scrollbars */
+
+@media (min-width: 992px) {
+    /* More specific selector to override earlier .modal--active rule */
+    .modal--active #payment-modal .modal-content {
+        max-width: 820px; /* increased to fit quick buttons */
+        width: 820px;
+        /* keep modal content within viewport but avoid inner scrollbars */
+        max-height: calc(100vh - 80px);
+        overflow: visible !important;
+        padding: 22px 28px;
+        box-sizing: border-box;
+    }
+
+    /* Reduce vertical spacing so content fits more compactly */
+    .modal--active #payment-modal .payment-header { margin-bottom: 8px; }
+    .modal--active #payment-modal .form-group { margin-bottom: 10px; }
+    .modal--active #payment-modal .payment-total { margin: 6px 0 10px 0; }
+    .modal--active #payment-modal .modal-actions { margin-top: 14px; }
+
+    /* ensure modal centers vertically on large screens */
+    .modal { align-items: center; }
+}
+
+/* Final override: ensure payment modal never shows an inner scrollbar on desktop */
+#payment-modal.modal--active {
+    /* make sure the modal overlay centers but allows enough room */
+    align-items: center;
+}
+#payment-modal.modal--active .modal-content {
+    /* keep modal content within viewport but avoid inner scrollbars */
+    max-height: calc(100vh - 48px) !important;
+    overflow: visible !important;
+}
+
+/* Hide webkit scrollbar specifically for payment modal content (visual fallback) */
+#payment-modal.modal--active .modal-content::-webkit-scrollbar {
+    display: none;
+    width: 0px;
+    height: 0px;
+}
+

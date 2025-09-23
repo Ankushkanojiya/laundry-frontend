@@ -153,19 +153,27 @@
         </div>
 
         <div class="balance-box">
-            <h2>
+            <div class="balance-left" style="display:flex;align-items:center;gap:14px;">
                 <span class="icon">💰</span>
-                <label for="customer-balance" id="customer-balance-label">Balance Due:</label> <span id="customer-balance">₹ 0</span>
-            </h2>
+                <div class="balance-details">
+                    <span id="customer-balance-label">Balance Due:</span>
+                    <span id="customer-balance">₹ 0</span>
+                </div>
+            </div>
             <button id="show-customer-payment-modal" class="pay-now-btn">
                 <span class="icon">💳</span> Pay Now
             </button>
         </div>
-        <h3>
+        <div class="section-header" style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
+            <h3 style="margin:0;display:flex;align-items:center;gap:8px;">
                 <span class="icon">📦</span>
                 Your Orders
             </h3>
-        <div class="table-container">
+            <button id="toggle-orders-btn" class="toggle-btn" aria-expanded="true" aria-controls="customer-orders-section" style="background:black;border:none;cursor:pointer;font-size:18px;padding:4px;">
+                <span class="arrow">▴</span>
+            </button>
+        </div>
+        <div id="customer-orders-section" class="table-container">
             
             <table class="order-table">
                 <thead>
@@ -181,13 +189,18 @@
                 </tbody>
             </table>
         </div>
-        <h3>
+        <div class="section-header" style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
+            <h3 style="margin:0;display:flex;align-items:center;gap:8px;">
                 <span class="icon">💵</span>
                 Your Payments
             </h3>
+            <button id="toggle-payments-btn" class="toggle-btn" aria-expanded="true" aria-controls="customer-payments-section" style="background:black;border:none;cursor:pointer;font-size:18px;padding:4px;">
+                <span class="arrow">▴</span>
+            </button>
+        </div>
         <div id="customer-orders-container"></div>
 
-        <div class="table-container">
+        <div id="customer-payments-section" class="table-container">
             
             <table class="payment-table">
                 <thead>
@@ -626,7 +639,6 @@
                                 <button id="close-edit-customer-modal" class="secondary-button">Cancel</button>
                             </div>
                             <div class="danger-zone">
-                                <hr class="divider">
                                 <p class="danger-text">Danger Zone</p>
                                 <button id="delete-customer-btn" class="danger-button">
                                     🗑️ Delete Customer
@@ -689,23 +701,26 @@
             <!-- Message container INSIDE modal-content -->
             <div id="payment-message" class="payment-message"></div>
 
-            <div class="form-group">
-                <label>Customer:</label>
-                <p id="payment-customer-name"></p>
+            <div class="payment-header">
+                <div class="avatar" id="payment-avatar">👤</div>
+                <div class="customer-info">
+                    <div class="customer-name" id="payment-customer-name">&nbsp;</div>
+             
+                </div>
+            </div>
+
+            <div class="payment-total">
+                <div class="label">Amount Due</div>
+                <div class="amount" id="payment-total-due">₹0.00</div>
             </div>
 
             <div class="form-group">
-                <label>Amount Due:</label>
-                <p id="payment-total-due">₹0.00</p>
-            </div>
-
-            <div class="form-group">
-                <label for="payment-amount">Amount Paid:</label>
-                <input type="number" id="payment-amount" min="0" step="5">
+                <label for="payment-amount">Amount Paid</label>
+                <input type="number" id="payment-amount" min="0" step="5" inputmode="decimal" autocomplete="off">
             </div>
 
             <div class="modal-actions">
-                <button id="process-payment-btn">Confirm Payment</button>
+                <button id="process-payment-btn">Pay</button>
                 <button id="close-payment-modal">Cancel</button>
             </div>
         </div>
@@ -790,6 +805,26 @@
 
     <script src="env.js"></script>
     <script type="module" src="main.js"></script>
+    <script>
+        // Toggle show/hide for Customer Orders and Payments sections
+        (function(){
+            function setupToggle(btnId, sectionId){
+                var btn = document.getElementById(btnId);
+                var section = document.getElementById(sectionId);
+                if(!btn || !section) return;
+                btn.addEventListener('click', function(){
+                    var isHidden = section.classList.toggle('hidden');
+                    var arrow = btn.querySelector('.arrow');
+                    if(arrow) arrow.textContent = isHidden ? '▾' : '▴';
+                    btn.setAttribute('aria-expanded', String(!isHidden));
+                });
+            }
+
+            // Initialize toggles
+            setupToggle('toggle-orders-btn', 'customer-orders-section');
+            setupToggle('toggle-payments-btn', 'customer-payments-section');
+        })();
+    </script>
 </body>
 
 </html>
