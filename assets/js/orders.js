@@ -212,7 +212,7 @@ export async function refreshOrders() {
         tbody.innerHTML = '';
 
         if (orders.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="6" style="text-align:center">No orders found</td></tr>`;
+            tbody.innerHTML = `<tr class="no-data-row"><td colspan="6" style="text-align:center">No orders found</td></tr>`;
             return;
         }
 
@@ -332,7 +332,7 @@ function renderCustomerOrders(orders) {
     tbody.innerHTML = '';
 
     if (orders.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center">No orders found for this customer.</td></tr>`;
+        tbody.innerHTML = `<tr class="no-data-row"><td colspan="5" style="text-align:center">No orders found for this customer.</td></tr>`;
         return;
     }
 

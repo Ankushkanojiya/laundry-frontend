@@ -166,10 +166,8 @@ export async function renderPaymentSummary(data) {
 
   if (!data || data.length === 0) {
     tbody.innerHTML = `
-      <tr>
-        <td colspan="5" class="no-data">
-          ${data ? 'No pending payments found' : 'Failed to load data'}
-        </td>
+      <tr class="no-data-row">
+        <td colspan="5" style="text-align:center">${data ? 'No pending payments found' : 'Failed to load data'}</td>
       </tr>
     `;
     return;
@@ -615,11 +613,9 @@ export async function showTransactionHistory(transactionData) {
   tbody.innerHTML = '';
 
   if (transactionData === 0) {
-    tbody.innerHTML = `
-        <tr>
-            <td colspan="4" class="no-data">No pending payments found</td>
-        </tr>
-        `;
+  tbody.innerHTML = `
+    <tr class="no-data-row"><td colspan="4" style="text-align:center">No pending payments found</td></tr>
+    `;
     return;
   }
 
