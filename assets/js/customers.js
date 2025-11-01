@@ -209,30 +209,26 @@ export async function addCustomer() {
         });
         console.log("Status:", response.status);
 
-        const responseData = await response.text();
+        const responseData = await response.json();
         console.log("Response body:", responseData);
         
-
         if (!response.ok) {
-            if (response.status === 400 && responseData.includes("already exists")) {
-                showMessage("The number is already exists", 'error');
-                highlightDuplicatePhone();
-                console.warn("Handled 400 error");
-                return;
-            }
-            throw new Error(responseData || 'Failed to add customer');
+            const errorMessage = new Error(responseData.error || 'Failed to add customer');
+            errorMessage.status = response.status;
+            throw errorMessage;
         }
         
         showMessage('Customer added successfully', 'success');
         resetForm();
         await refreshCustomers();
         
-    } catch (error) {
-        if (error.message.includes("already exists")) {
-            showMessage('Phone number already registered!', 'error');
-            highlightDuplicatePhone();
-        } else {
-            showMessage(error.message, 'error');
+    } catch (errorMessage) {
+        if(errorMessage.status === 409){
+            showMessage('This phone number is already exist.', 'error');
+            highlightDuplicatePhone(phone);
+        }
+        else{
+            showMessage(errorMessage.message || 'An error occurred', 'error');
         }
 
     }

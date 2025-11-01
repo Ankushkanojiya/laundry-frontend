@@ -69,7 +69,7 @@ export async function loadDashboardPendingOrders(){
         console.log("Error loading dashboard pending orders",error);
         const tbody=document.querySelector('#dashboard-pending-orders tbody');
         if(tbody){
-            tbody.innerHTML= `<tr><td colSpan="6" style="text-align:center;color:red;">Failed to load pending orders</td></tr>`;
+            tbody.innerHTML= `<tr class="no-data-row"><td colspan="6" style="text-align:center;color:red;">Failed to load pending orders</td></tr>`;
         }
     }
 }
@@ -82,7 +82,7 @@ export async function renderDashboardPendingOrders(orders){
     tbody.innerHTML = '';
 
     if (orders.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="5" style="text-align:center">No pending orders from yesterday or the day before</td></tr>`;
+        tbody.innerHTML = `<tr class="no-data-row"><td colspan="5" style="text-align:center">No pending orders from yesterday or the day before</td></tr>`;
         return;
     }
     orders.forEach(order => {

@@ -40,7 +40,7 @@ function renderCustomerPayments(payments){
     tbody.innerHTML ='';
 
     if(!payments.length){
-        tbody.innerHTML = `<tr><td colspan="6">No pending payments</td></tr>`;
+        tbody.innerHTML = `<tr class="no-data-row"><td colspan="6" style="text-align:center">No pending payments</td></tr>`;
         return;
     }
 

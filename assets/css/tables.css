@@ -670,6 +670,50 @@ td {
     opacity: 0.7;
 }
 
+/* Empty state styling for customer dashboard orders/payments */
+#customer-dashboard .no-data-row td {
+    text-align: center;
+    padding: 60px 20px;
+    color: #718096;
+    font-size: 18px;
+    font-weight: 500;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+}
+
+#customer-dashboard .no-data-row td::before {
+    content: '📝';
+    display: block;
+    font-size: 48px;
+    margin-bottom: 15px;
+    opacity: 0.7;
+}
+
+/* Empty state styling for payments tables (admin & customer) */
+#payments-section .no-data-row td,
+#customer-payments-section .no-data-row td,
+#payments-table .no-data-row td,
+#customer-payments-table .no-data-row td,
+.payment-table .no-data-row td {
+    text-align: center;
+    padding: 60px 20px;
+    color: #718096;
+    font-size: 18px;
+    font-weight: 500;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+}
+
+#payments-section .no-data-row td::before,
+#customer-payments-section .no-data-row td::before,
+#payments-table .no-data-row td::before,
+#customer-payments-table .no-data-row td::before,
+.payment-table .no-data-row td::before {
+    content: '💳';
+    display: block;
+    font-size: 48px;
+    margin-bottom: 15px;
+    opacity: 0.7;
+}
+
 /* Table styles improvement */
 .table-container {
     background: white;

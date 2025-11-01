@@ -81,7 +81,7 @@ export async function fetchCustomerOrders(customerId) {
         tbody.innerHTML = "";
 
         if (orders.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="5">No orders found</td></tr>`;
+            tbody.innerHTML = `<tr class="no-data-row"><td colspan="5" style="text-align:center">No orders found</td></tr>`;
             return;
         }
         for (const order of orders) {
@@ -101,7 +101,7 @@ export async function fetchCustomerOrders(customerId) {
             tbody.appendChild(row);
         }
     } catch (error) {
-        document.getElementById("customer-order-body").innerHTML = `<tr><td colspan="5">${err.message}</td></tr>`;
+        document.getElementById("customer-order-body").innerHTML = `<tr class="no-data-row"><td colspan="5" style="text-align:center">${error.message}</td></tr>`;
     }
 }
 
@@ -117,7 +117,7 @@ export async function fetchCustomerPayments(customerId) {
         tbody.innerHTML = "";
 
         if (payments.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="4">No payment history found</td></tr>`;
+            tbody.innerHTML = `<tr class="no-data-row"><td colspan="4" style="text-align:center">No payment history found</td></tr>`;
             return;
         }
         payments.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
@@ -144,7 +144,7 @@ export async function fetchCustomerPayments(customerId) {
         });
     } catch (error) {
         console.error("Error fetching payment history:", error);
-        document.getElementById("customer-payment-body").innerHTML = `<tr><td colspan="4">${error.message}</td></tr>`;
+        document.getElementById("customer-payment-body").innerHTML = `<tr class="no-data-row"><td colspan="4" style="text-align:center">${error.message}</td></tr>`;
     }
 }
 
