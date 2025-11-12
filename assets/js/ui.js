@@ -1,6 +1,6 @@
 import { loadStats, loadDashboardPendingOrders } from './adminDashboard.js';
-import {refreshCustomers} from './customers.js';
-import { loadCustomersForOrders , populateCustomerFilter,refreshOrders} from './orders.js';
+import { refreshCustomers } from './customers.js';
+import { loadCustomersForOrders, populateCustomerFilter, refreshOrders } from './orders.js';
 import { refreshPayments } from './payments.js';
 import { customerPayments } from './customerPayments.js';
 import { loadInsights } from './insights.js';
@@ -86,7 +86,7 @@ export function hideAllSections() {
         'payment-transaction-history',
         'invoice-modal'
     ];
-    
+
     modalsAndPopups.forEach(modalId => {
         const modal = document.getElementById(modalId);
         if (modal) {
@@ -118,7 +118,7 @@ function setActiveNavItem(activeItemText) {
 
 // Helper function to show a section and set its nav button active
 export function showSection(sectionId, navText) {
-    
+
     hideAllSections();
 
     // Show the selected section
@@ -230,13 +230,26 @@ export function showAuthTab(type) {
 export function toggleAuthMode(mode) {
     const loginSection = document.getElementById('customer-login-section');
     const registerSection = document.getElementById('customer-register-section');
+    const forgotSection = document.getElementById('forgot-password-section');
+    const resetSection = document.getElementById('reset-password-section');
+    const message = document.getElementById('customer-auth-message');
 
+    if (loginSection) loginSection.classList.add('hidden');
+    if (registerSection) registerSection.classList.add('hidden');
+    if (forgotSection) forgotSection.classList.add('hidden');
+    if (resetSection) resetSection.classList.add('hidden');
+    if (message) {
+        message.textContent = '';
+        message.className = 'message';
+    }
     if (mode === 'login') {
-        loginSection.classList.remove('hidden');
-        registerSection.classList.add('hidden');
-    } else {
-        loginSection.classList.add('hidden');
-        registerSection.classList.remove('hidden');
+        if (loginSection) loginSection.classList.remove('hidden');
+    } else if (mode === 'register') {
+        if (registerSection) registerSection.classList.remove('hidden');
+    } else if (mode === 'forgot-password') {
+        if (forgotSection) forgotSection.classList.remove('hidden');
+    } else if (mode === 'reset-password') {
+        if (resetSection) resetSection.classList.remove('hidden');
     }
     showMessage('', 'clear', 'customer-auth-message');
 }
@@ -277,14 +290,14 @@ export function cancelPasswordChange() {
     const form = document.getElementById("password-change-form");
     if (form) {
         form.classList.add("hidden");
-         
+
     }
     document.getElementById("change-password-btn")?.classList.remove("hidden");
     showMessage('', 'clear', "customer-profile-message");
     const messageBox = document.getElementById("customer-profile-message");
     if (messageBox) {
         messageBox.textContent = "";
-        messageBox.className = "message"; 
+        messageBox.className = "message";
     }
 }
 
@@ -293,7 +306,7 @@ export function showProfileMessage(message, type = "error") {
     if (!messageBox) return;
 
     messageBox.textContent = message;
-    
+
     if (type === "success") {
         messageBox.style.color = "green";
     } else if (type === "info") {

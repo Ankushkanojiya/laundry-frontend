@@ -22,8 +22,8 @@
 
             <!-- Toggle Tabs -->
             <div class="tab-toggle">
-                <button  id="tab-admin" class="active-tab">Admin</button>
-                <button  id="tab-customer">Customer</button>
+                <button id="tab-admin" class="active-tab">Admin</button>
+                <button id="tab-customer">Customer</button>
             </div>
 
             <!-- Admin Login Form -->
@@ -49,16 +49,22 @@
                     <div class="form-group">
                         <input type="password" id="customer-password-login" placeholder="Password">
                     </div>
+                    <div class="forgot-password">
+                        <h6><a href="#" id="show-forgot-password-link">Forgot Password?</a></h6>
+                    </div>
                     <button id="login-customer-btn">Login</button>
                     <p class="switch-auth">
                         New Customer? <a href="#" id="show-register-form-link">Register here</a>
                     </p>
                 </div>
-
+                <!-- Customer Registration form -->
                 <div id="customer-register-section" class="hidden">
                     <h2>Register New Account</h2>
                     <div class="form-group">
                         <input type="number" id="customer-phone-register" placeholder="Phone Number">
+                    </div>
+                    <div class="form-group">
+                        <input type="email" id="customer-email-register" placeholder="Email">
                     </div>
                     <div class="form-group">
                         <input type="password" id="customer-password-register" placeholder="Password">
@@ -66,6 +72,32 @@
                     <button id="register-customer-btn">Register</button>
                     <p class="switch-auth">
                         Already have an account?<a href="#" id="show-login-form-link">Login Here</a>
+                    </p>
+                </div>
+                <!-- Form to Enter email and Request OTP  -->
+                <div id="forgot-password-section" class="hidden">
+                    <h2>Email Verification</h2>
+                    <div class="form-group">
+                        <input type="email" id="forgot-password-email" placeholder="Enter your registered email">
+                    </div>
+                    <button id="request-otp-btn">Send OTP</button>
+                    <p class="switch-auth">
+                        Remembered? <a href="#" id="show-login-form-link-from-forgot">Back to Login</a>
+                    </p>
+                </div>
+                <!-- Form to Reset Password  -->
+                <div id="reset-password-section" class="hidden">
+                    <h2>Reset Password</h2>
+
+                    <div class="form-group">
+                        <input type="number" id="reset-password-otp" placeholder="Enter OTP">
+                    </div>
+                    <div class="form-group">
+                        <input type="password" id="reset-new-password" placeholder="Enter New Password">
+                    </div>
+                    <button id="verify-otp-btn">Verify OTP</button>
+                    <p class="switch-auth">
+                        <a href="#" id="show-login-form-link-from-reset">Back to Login</a>
                     </p>
                 </div>
                 <p id="customer-auth-message" class="message"></p>
@@ -109,7 +141,7 @@
                 <!-- Password Change Section -->
                 <div class="password-section">
                     <h4><span class="icon">🔐</span> Security</h4>
-                    <button  id="change-password-btn" class="change-password-btn">
+                    <button id="change-password-btn" class="change-password-btn">
                         <span class="icon">🔑</span> Change Password
                     </button>
 
@@ -169,12 +201,14 @@
                 <span class="icon">📦</span>
                 Your Orders
             </h3>
-            <button id="toggle-orders-btn" class="toggle-btn" aria-expanded="true" aria-controls="customer-orders-section" style="background:black;border:none;cursor:pointer;font-size:18px;padding:4px;">
+            <button id="toggle-orders-btn" class="toggle-btn" aria-expanded="true"
+                aria-controls="customer-orders-section"
+                style="background:black;border:none;cursor:pointer;font-size:18px;padding:4px;">
                 <span class="arrow">▴</span>
             </button>
         </div>
         <div id="customer-orders-section" class="table-container">
-            
+
             <table class="order-table">
                 <thead>
                     <tr>
@@ -194,14 +228,16 @@
                 <span class="icon">💵</span>
                 Your Payments
             </h3>
-            <button id="toggle-payments-btn" class="toggle-btn" aria-expanded="true" aria-controls="customer-payments-section" style="background:black;border:none;cursor:pointer;font-size:18px;padding:4px;">
+            <button id="toggle-payments-btn" class="toggle-btn" aria-expanded="true"
+                aria-controls="customer-payments-section"
+                style="background:black;border:none;cursor:pointer;font-size:18px;padding:4px;">
                 <span class="arrow">▴</span>
             </button>
         </div>
         <div id="customer-orders-container"></div>
 
         <div id="customer-payments-section" class="table-container">
-            
+
             <table class="payment-table">
                 <thead>
                     <tr>
@@ -267,7 +303,7 @@
                         Customer Payments
                     </button>
                 </div>
-                <button id="logout-button"   class="sidebar-logout">
+                <button id="logout-button" class="sidebar-logout">
                     <span class="nav-icon">⬅️</span>
                     Logout
                 </button>
@@ -412,10 +448,10 @@
 
                             </div>
                             <div class="form-actions">
-                                <button id="add-customer-btn" class="primary-button" >
+                                <button id="add-customer-btn" class="primary-button">
                                     Add Customer
                                 </button>
-                                <button id="reset-btn" class="secondary-button" >
+                                <button id="reset-btn" class="secondary-button">
                                     Clear Form
                                 </button>
                             </div>
@@ -655,7 +691,7 @@
     <!-- Order Confirmation Popup -->
     <div id="order-popup" class="hidden">
         <div class="popup-content">
-           
+
             <h3>Order Created Successfully! 🎉</h3>
             <p><strong>Order ID:</strong> <span id="popup-order-id"></span></p>
             <p><strong>Customer Name:</strong> <span id="popup-customer-name"></span></p>
@@ -666,7 +702,7 @@
             <p><strong>Status:</strong> <span id="popup-status">PENDING</span></p>
             <div style="margin-top: 15px;">
                 <button id="close-popup-button">Close</button>
-      
+
             </div>
         </div>
     </div>
@@ -705,7 +741,7 @@
                 <div class="avatar" id="payment-avatar">👤</div>
                 <div class="customer-info">
                     <div class="customer-name" id="payment-customer-name">&nbsp;</div>
-             
+
                 </div>
             </div>
 
@@ -803,19 +839,18 @@
         </div>
     </div>
 
-    <script src="env.js"></script>
     <script type="module" src="main.js"></script>
     <script>
         // Toggle show/hide for Customer Orders and Payments sections
-        (function(){
-            function setupToggle(btnId, sectionId){
+        (function () {
+            function setupToggle(btnId, sectionId) {
                 var btn = document.getElementById(btnId);
                 var section = document.getElementById(sectionId);
-                if(!btn || !section) return;
-                btn.addEventListener('click', function(){
+                if (!btn || !section) return;
+                btn.addEventListener('click', function () {
                     var isHidden = section.classList.toggle('hidden');
                     var arrow = btn.querySelector('.arrow');
-                    if(arrow) arrow.textContent = isHidden ? '▾' : '▴';
+                    if (arrow) arrow.textContent = isHidden ? '▾' : '▴';
                     btn.setAttribute('aria-expanded', String(!isHidden));
                 });
             }
