@@ -29,12 +29,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         
         if (isValidAdminToken) {
             console.log("Admin token is valid, loading admin dashboard.");
-            // document.getElementById('auth-section').style.display = 'none';
-            // const adminDashboard = document.getElementById('admin-dashboard');
-            // adminDashboard.classList.remove('hidden');
-            // adminDashboard.style.display = 'block';
-            // initAdminDashboard();
-            // ui.showDashboard();
             initializeAdminApp();
         } else {
             console.log("Admin token is invalid, clearing storage and showing login.");
@@ -56,12 +50,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             
             if (isValidToken) {
                 console.log("Token is valid, loading customer dashboard.");
-                // document.getElementById("auth-section").classList.add("hidden");
-                // document.getElementById("customer-dashboard").classList.remove("hidden");
-                
-                // // Import and load customer dashboard
-                // const { loadCustomerDashboard } = await import('./assets/js/customerDashboard.js');
-                // loadCustomerDashboard(customerId);
                 initializeCustomerApp();
             } else {
                 console.log("Token is invalid, clearing storage and showing login.");
@@ -134,19 +122,28 @@ function attachEventListeners() {
         e.preventDefault();
         ui.toggleAuthMode('login');
     });
+    document.getElementById('show-forgot-password-link')?.addEventListener('click', (e) => {
+        e.preventDefault();
+        console.log('show-forgot-password-link clicked');
+        ui.toggleAuthMode('forgot-password');
+    });
+    document.getElementById('reset-password-link')?.addEventListener('click', (e) => {
+        e.preventDefault();
+        console.log('reset-password-link clicked');
+        ui.toggleAuthMode('reset-password');
+    });
+    document.getElementById('show-login-form-link-from-forgot')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    ui.toggleAuthMode('login');
+});
+document.getElementById('show-login-form-link-from-reset')?.addEventListener('click', (e) => {
+    e.preventDefault();
+    ui.toggleAuthMode('login');
+});
 
-    // initAdminDashboard();
-    // initCustomers();
-    // refreshCustomers();
-    // initOrders();
-    // initPayments();
-    // initCustomerDashboard();
-    // initCustomerPayments();
-    // initDialogs();
 
 
     //Customer Profile
-
     document.getElementById('view-profile-btn')?.addEventListener('click', ui.showCustomerProfileSidebar);
     document.getElementById('close-customer-profile-sidebar')?.addEventListener('click', ui.closeCustomerProfileSidebar);
     document.getElementById('sidebar-overlay')?.addEventListener('click', ui.closeCustomerProfileSidebar);
@@ -182,7 +179,7 @@ function initializeCustomerApp() {
 
     initCustomerDashboard();
     initCustomerPayments();
-    initPayments(); // Add this to initialize payment modal for customers*
+    initPayments(); 
     loadCustomerDashboard(customerId);
 
     
