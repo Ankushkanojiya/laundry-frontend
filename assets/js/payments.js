@@ -5,7 +5,6 @@ import { viewOrders } from './orders.js';
 import { loadStats } from './adminDashboard.js';
 import { formatDateTime } from './utils.js';
 import { getCustomerAuthHeaders } from './customerAuth.js';
-// import { fetchCustomerBalance, fetchCustomerOrders, fetchCustomerPayments } from './customerDashboard.js';
 import { showConfirm, showAlert } from './dialogs.js';
 
 
@@ -309,9 +308,10 @@ async function processPayment() {
       showInvoiceModal(savedPayment);
       refreshPayments();
       loadStats();
-      setTimeout(() => {
-        closePaymentModal();
-      }, 2000);
+
+      closePaymentModal();
+      restorePayButton();
+
     } else if (whoIsPaying === "customer") {
       const amount = parseFloat(document.getElementById("payment-amount").value);
 
@@ -328,7 +328,7 @@ async function processPayment() {
 
       // Give the user a clear, friendly handoff when redirecting to UPI
       showMessage('Opening UPI app — please complete the payment and return to confirm.', 'info');
-      // Small visual cue before redirecting
+     
       await new Promise(res => setTimeout(res, 600));
       launchUpiIntent(amount);
 
@@ -339,10 +339,22 @@ async function processPayment() {
         );
 
         if (confirmed) {
-          sendPendingPayment(amount);
+          try {
+
+            await sendPendingPayment(amount);
+
+            document.dispatchEvent(new CustomEvent('customerPaymentSuccess'));
+            showMessage("Payment sent for verification!", "success");
+            closePaymentModal();
+
+          }catch (error) {
+            
+            showMessage(error.message, "error");
+          }
         } else {
           showMessage("Payment not recorded. Please try again.", "error");
         }
+        restorePayButton();
       }, 5000);
 
 
@@ -351,20 +363,21 @@ async function processPayment() {
     }
   } catch (error) {
     showMessage(error.message, 'error', 'payment-message');
+    restorePayButton();
     return;
   }
-  finally {
-    // Restore the button state
-    const processBtnFinal = document.getElementById('process-payment-btn');
-    if (processBtnFinal) {
-      processBtnFinal.disabled = false;
-      if (processBtnFinal.dataset && processBtnFinal.dataset.origHtml) {
-        processBtnFinal.innerHTML = processBtnFinal.dataset.origHtml;
-        delete processBtnFinal.dataset.origHtml;
-      }
+
+}
+
+function restorePayButton() {
+  const processBtnFinal = document.getElementById('process-payment-btn');
+  if (processBtnFinal) {
+    processBtnFinal.disabled = false;
+    if (processBtnFinal.dataset && processBtnFinal.dataset.origHtml) {
+      processBtnFinal.innerHTML = processBtnFinal.dataset.origHtml;
+      delete processBtnFinal.dataset.origHtml;
     }
   }
-
 }
 
 function launchUpiIntent(amount) {
@@ -399,10 +412,7 @@ async function sendPendingPayment(amount) {
 
     console.log("🧾 Saved pending payment:", savedPayment);
 
-    // fetchCustomerBalance(localStorage.getItem("customerId"));
-    // fetchCustomerOrders(localStorage.getItem("customerId"));
-    // fetchCustomerPayments(localStorage.getItem("customerId"));
-     document.dispatchEvent(new CustomEvent('customerPaymentSuccess'));
+    document.dispatchEvent(new CustomEvent('customerPaymentSuccess'));
 
     closePaymentModal();
   } catch (err) {
@@ -436,7 +446,9 @@ export async function showCustomerPaymentModal() {
     });
     if (!response.ok) throw new Error("Failed to fetch balance");
 
-    const balance = parseFloat(await response.text());
+    const result = await response.json();
+    const balance = result.balance;
+    const hasPendingPayments = result.hasPendingPayments;
     paymentBalance = balance;
 
     console.log("Customer balance fetched:", balance);
@@ -613,7 +625,7 @@ export async function showTransactionHistory(transactionData) {
   tbody.innerHTML = '';
 
   if (transactionData === 0) {
-  tbody.innerHTML = `
+    tbody.innerHTML = `
     <tr class="no-data-row"><td colspan="4" style="text-align:center">No pending payments found</td></tr>
     `;
     return;
@@ -645,7 +657,7 @@ export async function showTransactionHistory(transactionData) {
     `;
   }).join('');
 
-  
+
 }
 
 function closePaymentModal() {
@@ -712,7 +724,7 @@ function setPaymentAvatar(name) {
     const parts = (name || '').trim().split(/\s+/).filter(Boolean);
     let initials = '';
     if (parts.length === 0) initials = '👤';
-    else if (parts.length === 1) initials = parts[0].slice(0,2).toUpperCase();
+    else if (parts.length === 1) initials = parts[0].slice(0, 2).toUpperCase();
     else initials = (parts[0][0] + parts[1][0]).toUpperCase();
     avatar.textContent = initials;
   } catch (err) {

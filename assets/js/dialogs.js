@@ -200,38 +200,29 @@ export function showConfirmDialog(message, options = {}) {
     });
 }
 
-/**
- * Show a dialog
- * @param {HTMLElement} modal - The modal element to show
- */
 function showDialog(modal) {
     modal.classList.remove('hidden');
-    // Use requestAnimationFrame to ensure the class is added after the element is visible
+    
     requestAnimationFrame(() => {
         modal.classList.add('modal--active');
     });
 }
 
-/**
- * Close a dialog
- * @param {HTMLElement} modal - The modal element to close
- */
+
 function closeDialog(modal) {
     console.log('Closing dialog:', modal.id, 'Stack trace:', new Error().stack);
     modal.classList.remove('modal--active');
     setTimeout(() => {
         modal.classList.add('hidden');
         console.log('Dialog hidden:', modal.id);
-    }, 300); // Match the CSS transition duration
+    }, 300); 
     
     if (currentDialog === modal) {
         currentDialog = null;
     }
 }
 
-/**
- * Close the currently open dialog if any
- */
+
 function closeCurrentDialog() {
     if (currentDialog) {
         closeDialog(currentDialog);
@@ -269,7 +260,8 @@ export function initDialogs() {
     console.log('Dialog system initialized');
 }
 
-// Separate function to handle modal backdrop clicks
+
+
 function handleModalBackdropClick(e) {
     // Only close if clicking directly on the modal backdrop, not on child elements
     if (e.target === e.currentTarget) {

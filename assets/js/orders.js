@@ -1,6 +1,6 @@
 import { BASE_URL } from './config.js';
 import { getAdminAuthHeaders } from './auth.js';
-import { showMessage , highlightCustomerSelect, highlightClothCountInput } from './ui.js';
+import { showMessage, highlightCustomerSelect, highlightClothCountInput } from './ui.js';
 import { loadStats } from './adminDashboard.js';
 import { showConfirmDialog } from './dialogs.js';
 
@@ -19,7 +19,7 @@ export function initOrders() {
             closeOrderPopup();
         }
     });
-    
+
     // --- Manage Orders Filters ---
     document.getElementById('apply-filters-button')?.addEventListener('click', refreshOrders);
     document.getElementById('clear-filters-button')?.addEventListener('click', () => {
@@ -38,12 +38,12 @@ export function initOrders() {
     ordersTableBody?.addEventListener('click', (event) => {
         const button = event.target.closest('button');
         if (!button) return;
-        
+
         const action = button.dataset.action;
         if (action === 'update-status') {
             const orderId = button.dataset.id;
             const newStatus = button.dataset.status;
-            updateOrderStatus(orderId, newStatus,false);
+            updateOrderStatus(orderId, newStatus, false);
         }
     });
 
@@ -149,11 +149,11 @@ export function showOrderPopup(order) {
     document.getElementById('popup-order-date').textContent = orderDate;
     document.getElementById('popup-status').textContent = order.status;
     document.getElementById('order-popup').classList.remove('hidden');
-    
-    
+
+
 }
-document.getElementById("order-popup").addEventListener("click", function(e) {
-    if (e.target === this) { 
+document.getElementById("order-popup").addEventListener("click", function (e) {
+    if (e.target === this) {
         closeOrderPopup();
     }
 });
@@ -165,7 +165,7 @@ export function closeOrderPopup() {
 export function resetOrderForm() {
     document.getElementById('customer-select').value = '';
     document.getElementById('cloth-count').value = '';
-    
+
     showMessage('', 'clear', 'order-message');
 }
 
@@ -219,18 +219,18 @@ export async function refreshOrders() {
         orders.forEach(order => {
 
             let statusCell = '';
-        switch (order.status) {
-            case 'PENDING':
-                statusCell = `<button class="status-btn pending" data-action="update-status" data-id="${order.id}" data-status="IN_PROGRESS">Start</button>`;
-                break;
-            case 'IN_PROGRESS':
-                statusCell = `<button class="status-btn in-progress" data-action="update-status" data-id="${order.id}" data-status="COMPLETED">Mark Complete</button>`;
-                break;
-            case 'COMPLETED':
-                statusCell = `<span class="status-badge completed">Done</span>`;
-                break;
-            default:
-                statusCell = order.status;
+            switch (order.status) {
+                case 'PENDING':
+                    statusCell = `<button class="status-btn pending" data-action="update-status" data-id="${order.id}" data-status="IN_PROGRESS">Start</button>`;
+                    break;
+                case 'IN_PROGRESS':
+                    statusCell = `<button class="status-btn in-progress" data-action="update-status" data-id="${order.id}" data-status="COMPLETED">Mark Complete</button>`;
+                    break;
+                case 'COMPLETED':
+                    statusCell = `<span class="status-badge completed">Done</span>`;
+                    break;
+                default:
+                    statusCell = order.status;
             }
 
             // Format date
@@ -269,7 +269,7 @@ export async function refreshOrders() {
 
 export async function updateOrderStatus(orderId, newStatus, isInModal = false) {
     console.log(`🔄 Updating order ${orderId} to status ${newStatus}, isInModal: ${isInModal}`);
-    
+
     const confirmed = await showConfirmDialog(
         `Are you sure you want to change this order status to ${newStatus}?`,
         {
@@ -279,7 +279,7 @@ export async function updateOrderStatus(orderId, newStatus, isInModal = false) {
             confirmClass: 'primary-button'
         }
     );
-    
+
     if (!confirmed) return;
 
     try {
@@ -308,7 +308,7 @@ export async function viewOrders(customerId, customerName) {
         currentCustomerInModal = { id: customerId, name: customerName };
         document.getElementById('customer-order-history-name').textContent = customerName;
 
-       
+
         const response = await fetch(`${BASE_URL}/api/orders/customer/${customerId}`, {
             method: "GET",
             headers: getAdminAuthHeaders()
@@ -316,7 +316,7 @@ export async function viewOrders(customerId, customerName) {
         if (!response.ok) throw new Error("Failed to fetch customer orders");
 
         const orders = await response.json();
-        renderCustomerOrders(orders); 
+        renderCustomerOrders(orders);
 
         const modal = document.getElementById('customer-order-history');
         modal.classList.remove('hidden');

@@ -77,10 +77,7 @@ export async function loginCustomer() {
         localStorage.setItem('customerName', result.customerName);
         localStorage.setItem('customerPhone', phone);
 
-        // document.getElementById("auth-section").classList.add("hidden");
-        // document.getElementById("customer-dashboard").classList.remove("hidden");
-
-        // loadCustomerDashboard(result.customerId)
+       
         return true;
     } catch (error) {
         showMessage("An error occurred. Please try again.", "error", "customer-auth-message");
@@ -180,7 +177,7 @@ export async function submitPasswordChange() {
     }
 }
 export function logoutCustomer() {
-    localStorage.clear(); // Clears all admin and customer data
+    localStorage.clear(); 
     window.location.reload();
 }
 let customerEmailForReset = null;

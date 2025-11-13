@@ -3,6 +3,7 @@ import { getCustomerAuthHeaders } from "./customerAuth.js";
 import { formatDateTime } from "./utils.js";
 import { showInvoiceModal } from "./payments.js"
 import { closeInvoiceModal, showCustomerPaymentModal } from "./payments.js"
+import { showToast } from "./ui.js";
 
 
 
@@ -43,8 +44,9 @@ export async function fetchCustomerBalance(customerId) {
         });
         if (!response.ok) throw new Error("Failed to fetch customer data");
 
-        const rawBalance = await response.text();
-        const balance = parseFloat(rawBalance);
+        const result = await response.json();
+        const balance = result.balance;
+        const hasPendingPayments = result.hasPendingPayment;
 
         if (isNaN(balance)) {
             throw new Error("Invalid balance value");
@@ -53,8 +55,17 @@ export async function fetchCustomerBalance(customerId) {
         const customerBalanceLabel = document.getElementById('customer-balance-label');
         const customerBalance = document.getElementById('customer-balance');
 
-        if (balance < 0) {
+        const payNowBtn = document.getElementById('show-customer-payment-modal');
+        if (hasPendingPayments) {
+            payNowBtn.disabled = true;
+            payNowBtn.textContent = "Contact Admin";
+            showToast("You already have a pending payment request. Please contact Admin.", "info", 10000);
+        }
+        else if (balance < 0) {
             customerBalanceLabel.textContent = "Advance Balance:";
+            payNowBtn.style.display = "none";
+        } else if (balance == 0) {
+            payNowBtn.style.display = "none";
         } else {
             customerBalanceLabel.textContent = "Balance Due:";
         }
