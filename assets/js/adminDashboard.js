@@ -15,11 +15,11 @@ export function initAdminDashboard() {
         const button = event.target.closest('button');
         if (!button) return;
 
-        
+
         if (button.dataset.action === 'update-status-dashboard') {
             const orderId = button.dataset.id;
             const newStatus = button.dataset.status;
-            
+
             updateOrderStatus(orderId, newStatus, false);
         }
     });
@@ -28,27 +28,27 @@ export function initAdminDashboard() {
 export async function loadStats() {
     console.log("loading admin dashboard stats");
     try {
-        const response=await fetch(`${BASE_URL}/api/stats`,{
+        const response = await fetch(`${BASE_URL}/api/stats`, {
             method: "GET",
             headers: getAdminAuthHeaders()
         });
 
-        const data=await response.json();
+        const data = await response.json();
 
-        document.getElementById('pending-count').textContent=data.pendingOrders;
-        document.getElementById('business-revenue').textContent=`₹${data.businessRevenueToday.toFixed(2)}`;
-        document.getElementById('daily-revenue').textContent=`₹${data.revenueToday.toFixed(2)}`;
+        document.getElementById('pending-count').textContent = data.pendingOrders;
+        document.getElementById('business-revenue').textContent = `₹${data.businessRevenueToday.toFixed(2)}`;
+        document.getElementById('daily-revenue').textContent = `₹${data.revenueToday.toFixed(2)}`;
     } catch (error) {
-        console.error("failed to load stats",error);
+        console.error("failed to load stats", error);
     }
 }
 
-export async function loadDashboardPendingOrders(){
+export async function loadDashboardPendingOrders() {
     console.log("loading pending orders");
     try {
-        const today=new Date();
-        const yesterday= new Date(today);
-        yesterday.setDate(today.getDate()-1);
+        const today = new Date();
+        const yesterday = new Date(today);
+        yesterday.setDate(today.getDate() - 1);
 
         const dayBeforeYesterday = new Date(today);
         dayBeforeYesterday.setDate(today.getDate() - 2);
@@ -57,25 +57,25 @@ export async function loadDashboardPendingOrders(){
         const startDate = dayBeforeYesterday.toISOString().split('T')[0];
         const endDate = yesterday.toISOString().split('T')[0];
 
-        const response=await fetch(`${BASE_URL}/api/orders/filter?status=PENDING&startDate=${startDate}&endDate=${endDate}`,{
-            method:"GET",
-            headers:getAdminAuthHeaders()
+        const response = await fetch(`${BASE_URL}/api/orders/filter?status=PENDING&startDate=${startDate}&endDate=${endDate}`, {
+            method: "GET",
+            headers: getAdminAuthHeaders()
         });
 
-        if(!response.ok) throw new Error ("failed to load pending orders");
-        const orders=await response.json();
+        if (!response.ok) throw new Error("failed to load pending orders");
+        const orders = await response.json();
         renderDashboardPendingOrders(orders);
     } catch (error) {
-        console.log("Error loading dashboard pending orders",error);
-        const tbody=document.querySelector('#dashboard-pending-orders tbody');
-        if(tbody){
-            tbody.innerHTML= `<tr class="no-data-row"><td colspan="6" style="text-align:center;color:red;">Failed to load pending orders</td></tr>`;
+        console.log("Error loading dashboard pending orders", error);
+        const tbody = document.querySelector('#dashboard-pending-orders tbody');
+        if (tbody) {
+            tbody.innerHTML = `<tr class="no-data-row"><td colspan="6" style="text-align:center;color:red;">Failed to load pending orders</td></tr>`;
         }
     }
 }
 
-export async function renderDashboardPendingOrders(orders){
-    
+export async function renderDashboardPendingOrders(orders) {
+
     const tbody = document.querySelector('#dashboard-pending-orders tbody');
     if (!tbody) return;
 
@@ -86,7 +86,7 @@ export async function renderDashboardPendingOrders(orders){
         return;
     }
     orders.forEach(order => {
-        // window.updateOrderStatus = updateOrderStatus;
+
         tbody.innerHTML += `<tr>
             <td>#${order.id}</td>
             <td>${order.customerName}</td>

@@ -1,37 +1,37 @@
 import { BASE_URL } from './config.js';
-import {showMessage} from './ui.js';
-import {initAdminDashboard} from './adminDashboard.js';
-import {showDashboard} from './ui.js'
+import { showMessage } from './ui.js';
+import { initAdminDashboard } from './adminDashboard.js';
+import { showDashboard } from './ui.js'
 
 export async function login() {
     console.log("login initiated");
     const username = document.getElementById('username').value.trim();
-    const password=document.getElementById('password').value.trim();
+    const password = document.getElementById('password').value.trim();
 
     if (!username || !password) {
-        showMessage("Username and password required","error",'login-message');
+        showMessage("Username and password required", "error", 'login-message');
         return;
     }
 
     try {
-        const response=await fetch(`${BASE_URL}/api/admin/auth/login`,{
-            method:"POST",
-            headers:{ "Content-Type" : "application/json"},
+        const response = await fetch(`${BASE_URL}/api/admin/auth/login`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
                 username: username,
                 password: password
             })
         });
 
-        if(!response.ok) throw new Error("Login failed - Incorrect username or password");
-        const result= await response.json();
-        localStorage.setItem('adminToken',result.token);
+        if (!response.ok) throw new Error("Login failed - Incorrect username or password");
+        const result = await response.json();
+        localStorage.setItem('adminToken', result.token);
 
         // if login successful show admin dashboard
-        document.getElementById('auth-section').style.display="none";
-        const adminDashboard=document.getElementById('admin-dashboard');
+        document.getElementById('auth-section').style.display = "none";
+        const adminDashboard = document.getElementById('admin-dashboard');
         adminDashboard.classList.remove("hidden");
-        adminDashboard.style.display="block";
+        adminDashboard.style.display = "block";
 
         // initAdminDashboard();
         // showDashboard();
@@ -47,21 +47,21 @@ export function isAdminLoggedIn() {
     return !!adminToken;
 }
 
-export function logoutAdmin(){
-    try{
-    localStorage.removeItem('adminToken');
-    localStorage.removeItem('sidebarCollapsed');
-    window.location.reload();
+export function logoutAdmin() {
+    try {
+        localStorage.removeItem('adminToken');
+        localStorage.removeItem('sidebarCollapsed');
+        window.location.reload();
     } catch (error) {
         console.error('Logout error:', error);
-        window.location.reload();   
+        window.location.reload();
     }
 }
 
 
-export function getAdminAuthHeaders(){
-    const adminToken=localStorage.getItem("adminToken");
-    return{
+export function getAdminAuthHeaders() {
+    const adminToken = localStorage.getItem("adminToken");
+    return {
         "Authorization": `Bearer ${adminToken}`,
         "Content-Type": "application/json"
     }
@@ -69,29 +69,28 @@ export function getAdminAuthHeaders(){
 
 
 
-export function getHeaders(){
-    const getToken=localStorage.getItem("adminToken")||localStorage.getItem("customerToken");
-    if(!getToken) throw new Error("No authentication token found");
-    return{
-        "Authorization" : `Bearer ${getToken}`,
-        "Content-Type" : "application/json"
+export function getHeaders() {
+    const getToken = localStorage.getItem("adminToken") || localStorage.getItem("customerToken");
+    if (!getToken) throw new Error("No authentication token found");
+    return {
+        "Authorization": `Bearer ${getToken}`,
+        "Content-Type": "application/json"
     }
 }
 
 export async function validateAdminToken() {
     const token = localStorage.getItem("adminToken");
-    
+
     if (!token) {
         return false;
     }
-    
+
     try {
         const response = await fetch(`${BASE_URL}/api/stats`, {
             method: "GET",
             headers: getAdminAuthHeaders()
         });
-        
-        // If the request is successful, the token is valid
+
         return response.ok;
     } catch (error) {
         console.error("Admin token validation error:", error);

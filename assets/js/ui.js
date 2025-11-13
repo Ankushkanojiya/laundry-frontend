@@ -151,7 +151,7 @@ export function showSection(sectionId, navText) {
     const navItems = document.querySelectorAll('.nav-item');
     navItems.forEach(item => {
         const itemContent = item.textContent.trim();
-        const itemText = itemContent.replace(/[^\x20-\x7E]/g, '').trim(); // Remove emojis and keep only printable ASCII
+        const itemText = itemContent.replace(/[^\x20-\x7E]/g, '').trim(); 
         const buttonText = navText.trim();
 
         if (itemText === buttonText) {
@@ -310,8 +310,7 @@ export function showProfileMessage(message, type = "error") {
     if (type === "success") {
         messageBox.style.color = "green";
     } else if (type === "info") {
-        messageBox.style.color = "#007bff"; // Blue color for info messages
-        // Auto-clear info messages after 2 seconds
+        messageBox.style.color = "#007bff"; 
         setTimeout(() => {
             if (messageBox.textContent === message) {
                 messageBox.textContent = "";
@@ -321,4 +320,18 @@ export function showProfileMessage(message, type = "error") {
     } else {
         messageBox.style.color = "red";
     }
+}
+
+export function showToast(message, type = "info", duration = 10000) {
+    console.log("Showing toast:", message, type, duration);
+    const toast = document.getElementById("toast");
+    if (!toast) return;
+
+    toast.textContent = message;
+    toast.className = `toast show ${type}`; 
+
+  
+    setTimeout(() => {
+        toast.className = toast.className.replace("show", "hidden");
+    }, duration);
 }

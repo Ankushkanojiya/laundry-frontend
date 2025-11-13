@@ -6,7 +6,7 @@ import * as customers from './assets/js/customers.js';
 import { initOrders, closeHistoryModal } from './assets/js/orders.js';
 import { initPayments } from './assets/js/payments.js';
 import * as customerAuth from './assets/js/customerAuth.js';
-import { initCustomerDashboard,loadCustomerDashboard } from './assets/js/customerDashboard.js';
+import { initCustomerDashboard, loadCustomerDashboard } from './assets/js/customerDashboard.js';
 import { initCustomerPayments } from './assets/js/customerPayments.js';
 import { initDialogs } from './assets/js/dialogs.js';
 document.addEventListener('DOMContentLoaded', async () => {
@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     customers.initCustomers();
     // initOrders();
 
-    
+
     // Check for existing login tokens and route accordingly
     const adminToken = localStorage.getItem("adminToken");
     const customerToken = localStorage.getItem("customerToken");
@@ -23,10 +23,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (adminToken) {
         // Validate admin token before showing dashboard
         console.log("Admin token found, validating...");
-        
+
         const { validateAdminToken } = await import('./assets/js/auth.js');
         const isValidAdminToken = await validateAdminToken();
-        
+
         if (isValidAdminToken) {
             console.log("Admin token is valid, loading admin dashboard.");
             initializeAdminApp();
@@ -40,14 +40,14 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Validate customer token before showing dashboard
         const customerId = localStorage.getItem("customerId");
         const customerName = localStorage.getItem("customerName");
-        
+
         if (customerId && customerName) {
             console.log("Customer token found, validating...");
-            
+
             // Import the validation function and validate token
             const { validateCustomerToken } = await import('./assets/js/customerAuth.js');
             const isValidToken = await validateCustomerToken();
-            
+
             if (isValidToken) {
                 console.log("Token is valid, loading customer dashboard.");
                 initializeCustomerApp();
@@ -59,7 +59,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
         } else {
             // Token exists but missing user data, clear storage and show login
-        
+
             ui.hideAllSections();
             document.getElementById('auth-section').style.display = 'flex';
         }
@@ -95,7 +95,7 @@ function attachEventListeners() {
     document.getElementById('nav-insights')?.addEventListener('click', ui.showInsights);
 
     // customer management
-    
+
     document.getElementById('add-customer-btn')?.addEventListener('click', customers.addCustomer);
     document.getElementById('reset-btn')?.addEventListener('click', customers.resetForm);
     document.getElementById('span-close-edit-customer-modal')?.addEventListener('click', customers.closeEditCustomerModal);
@@ -112,7 +112,7 @@ function attachEventListeners() {
 
     document.getElementById('tab-admin')?.addEventListener('click', () => ui.showAuthTab('admin'));
     document.getElementById('tab-customer')?.addEventListener('click', () => ui.showAuthTab('customer'));
-    
+
     //toggle between login and register forms
     document.getElementById('show-register-form-link')?.addEventListener('click', (e) => {
         e.preventDefault();
@@ -133,13 +133,13 @@ function attachEventListeners() {
         ui.toggleAuthMode('reset-password');
     });
     document.getElementById('show-login-form-link-from-forgot')?.addEventListener('click', (e) => {
-    e.preventDefault();
-    ui.toggleAuthMode('login');
-});
-document.getElementById('show-login-form-link-from-reset')?.addEventListener('click', (e) => {
-    e.preventDefault();
-    ui.toggleAuthMode('login');
-});
+        e.preventDefault();
+        ui.toggleAuthMode('login');
+    });
+    document.getElementById('show-login-form-link-from-reset')?.addEventListener('click', (e) => {
+        e.preventDefault();
+        ui.toggleAuthMode('login');
+    });
 
 
 
@@ -152,7 +152,7 @@ document.getElementById('show-login-form-link-from-reset')?.addEventListener('cl
 
     initDialogs();
     customerAuth.initCustomerAuth();
-    
+
 
 
 }
@@ -179,11 +179,11 @@ function initializeCustomerApp() {
 
     initCustomerDashboard();
     initCustomerPayments();
-    initPayments(); 
+    initPayments();
     loadCustomerDashboard(customerId);
 
-    
-   
+
+
 }
 
 export { initializeAdminApp, initializeCustomerApp };
