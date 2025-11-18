@@ -17,9 +17,9 @@ export async function registerCustomer() {
     console.log("Customer registration initiated");
     const phone = document.getElementById('customer-phone-register').value.trim();
     const password = document.getElementById('customer-password-register').value.trim();
-
-    if (!phone || !password) {
-        showMessage("Phone and password are required.", "error", "customer-auth-message");
+    const email = document.getElementById('customer-email-register').value.trim();
+    if (!phone || !password || !email) {
+        showMessage("Phone, email, and password are required.", "error", "customer-auth-message");
         return;
     }
     if (!/^\d{10}$/.test(phone)) {
@@ -31,7 +31,7 @@ export async function registerCustomer() {
         const response = await fetch(`${BASE_URL}/api/customer-auth/register`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ phoneNumber: phone, password: password })
+            body: JSON.stringify({ phoneNumber: phone, password: password, email:email })
         });
 
         if (!response.ok) {
