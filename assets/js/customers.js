@@ -1,5 +1,5 @@
 import { BASE_URL } from './config.js';
-import { showMessage, highlightDuplicatePhone } from './ui.js';
+import { showMessage, highlightDuplicatePhone, showToast } from './ui.js';
 import { getAdminAuthHeaders } from './auth.js';
 import { viewOrders } from './orders.js';
 import { viewTransactions } from './payments.js';
@@ -12,7 +12,7 @@ export function initCustomers() {
     console.log('Initializing customers module...');
 
     const tableBody = document.getElementById('customers-table-body');
-    
+
     // Handle row clicks to show action options
     tableBody?.addEventListener('click', (event) => {
         const button = event.target.closest('button');
@@ -112,15 +112,15 @@ export async function refreshCustomers() {
 
         const customers = await response.json();
         const tableBody = document.querySelector('#customers-table-body');
-        
+
         // Hide any existing actions first
         hideCustomerActions();
-        
+
         if (customers.length === 0) {
             tableBody.innerHTML = `<tr class="no-data-row"><td colspan="3" style="text-align:center">No Customers found</td></tr>`;
             return;
         }
-        
+
         tableBody.innerHTML = customers.map(customer => `
             <tr class="customer-row" data-customer-id="${customer.id}" data-customer-name="${customer.name}" style="cursor: pointer;">
                 <td>#${customer.id}</td>
@@ -137,13 +137,13 @@ export async function refreshCustomers() {
 function showCustomerActions(row, customerId, customerName) {
     // Hide any existing actions first
     hideCustomerActions();
-    
+
     // Get phone number from the row
     const phoneNumber = row.cells[2].textContent;
-    
+
     // Add active state to clicked row
     row.classList.add('customer-row-active');
-    
+
     // Create actions row
     const actionsRow = document.createElement('tr');
     actionsRow.classList.add('customer-actions-row');
@@ -165,7 +165,7 @@ function showCustomerActions(row, customerId, customerName) {
             </div>
         </td>
     `;
-    
+
     // Insert actions row after the clicked row
     row.parentNode.insertBefore(actionsRow, row.nextSibling);
 }
@@ -176,7 +176,7 @@ function hideCustomerActions() {
     document.querySelectorAll('.customer-row-active').forEach(row => {
         row.classList.remove('customer-row-active');
     });
-    
+
     // Remove all action rows
     document.querySelectorAll('.customer-actions-row').forEach(row => {
         row.remove();
@@ -211,23 +211,23 @@ export async function addCustomer() {
 
         const responseData = await response.json();
         console.log("Response body:", responseData);
-        
+
         if (!response.ok) {
             const errorMessage = new Error(responseData.error || 'Failed to add customer');
             errorMessage.status = response.status;
             throw errorMessage;
         }
-        
+
         showMessage('Customer added successfully', 'success');
         resetForm();
         await refreshCustomers();
-        
+
     } catch (errorMessage) {
-        if(errorMessage.status === 409){
+        if (errorMessage.status === 409) {
             showMessage('This phone number is already exist.', 'error');
             highlightDuplicatePhone(phone);
         }
-        else{
+        else {
             showMessage(errorMessage.message || 'An error occurred', 'error');
         }
 
@@ -309,14 +309,18 @@ export async function deleteCustomer(id) {
             headers: getAdminAuthHeaders()
         });
 
-        if (!response.ok) {
-            throw new Error('Failed to delete customer');
+        if (response.ok) {
+            showToast('Customer deleted successfully', 'info', 2000);
+            closeEditCustomerModal();
+            await refreshCustomers();
+            loadStats();
+        }else{
+            const errorData = await response.json().catch(() => null);
+            const errorMessage = errorData && errorData.error ? errorData.error : 'Failed to delete customer';
+            throw new Error(errorMessage);
         }
 
-        showMessage('Customer deleted successfully', 'success');
-        closeEditCustomerModal();
-        await refreshCustomers();
-        loadStats();
+
     } catch (error) {
         showMessage(error.message, 'error', 'edit-customer-message');
     }
