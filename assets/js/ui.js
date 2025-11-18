@@ -322,7 +322,7 @@ export function showProfileMessage(message, type = "error") {
     }
 }
 
-export function showToast(message, type = "info", duration = 10000) {
+export function showToast(message, type = "info", duration = 2000) {
     console.log("Showing toast:", message, type, duration);
     const toast = document.getElementById("toast");
     if (!toast) return;
